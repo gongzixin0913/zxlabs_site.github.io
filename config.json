@@ -1,0 +1,81 @@
+{
+  "site": {
+    "logo": "ZX · Labs",
+    "title": "用镜头书写光与影的故事",
+    "subtitle": "每一次快门，都是一场与世界的对话",
+    "eyebrow": "Photography Portfolio",
+    "footer": "© 2026 ZX Labs · Powered by GitHub Pages"
+  },
+
+  "about": {
+    "name": "子昕",
+    "bio": [
+      "独立摄影师，常驻上海。喜欢用镜头记录旅途中的光影瞬间，尤其钟爱自然风光和城市夜景。",
+      "拍摄设备：尼康 Z5 / Fujifilm X-T30"
+    ],
+    "avatar": "",
+    "stats": [
+      { "value": "6", "label": "年摄影经历" },
+      { "value": "30+", "label": "城市足迹" },
+      { "value": "2k+", "label": "精选作品" }
+    ]
+  },
+
+  "contact": [
+    { "icon": "📧", "text": "hello@zxlabs.cn", "link": "mailto:hello@zxlabs.cn" },
+    { "icon": "📱", "text": "微信: YourWechatID", "link": "" },
+    { "icon": "📸", "text": "小红书: @你的昵称", "link": "" }
+  ],
+
+  "categories": ["风光", "人像", "街拍", "夜景"],
+
+  "cos_base": "https://zxlabs-photo-1335324244.cos.ap-shanghai.myqcloud.com",
+
+  "photos": [
+    {
+      "file": "/photos/street/DSCF9565.JPG",
+      "title": "晨雾中的山脊",
+      "category": "风光",
+      "location": "云南",
+      "date": "2024",
+      "wide": true
+    },
+    {
+      "file": "/photos/street/sample-002.jpg",
+      "title": "午后的光",
+      "category": "人像",
+      "location": "上海",
+      "date": "2024"
+    },
+    {
+      "file": "/photos/street/sample-003.jpg",
+      "title": "弄堂深处",
+      "category": "街拍",
+      "location": "上海",
+      "date": "2024",
+      "tall": true
+    },
+    {
+      "file": "/photos/night/sample-004.jpg",
+      "title": "霓虹与雨",
+      "category": "夜景",
+      "location": "东京",
+      "date": "2024"
+    },
+    {
+      "file": "/photos/landscape/sample-005.jpg",
+      "title": "日落金沙",
+      "category": "风光",
+      "location": "新疆",
+      "date": "2023"
+    },
+    {
+      "file": "/photos/night/sample-006.jpg",
+      "title": "银河拱桥",
+      "category": "夜景",
+      "location": "西藏",
+      "date": "2023",
+      "wide": true
+    }
+  ]
+}
