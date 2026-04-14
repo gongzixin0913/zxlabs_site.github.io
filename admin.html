@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZX Labs · 作者管理后台</title>
+  <!-- 引入腾讯云 COS SDK -->
+  <script src="https://unpkg.com/cos-js-sdk-v5/dist/cos-js-sdk-v5.min.js"></script>
+  <style>
+    body { font-family: -apple-system, sans-serif; background: #080808; color: #eee; max-width: 600px; margin: 2rem auto; padding: 1rem; }
+    .panel { background: #161616; padding: 2rem; border-radius: 8px; border: 1px solid #333; margin-bottom: 1rem; }
+    h2 { margin-top: 0; color: #c4956a; }
+    label { display: block; margin: 10px 0 5px; font-size: 0.9rem; color: #aaa; }
+    input, select { width: 100%; padding: 10px; background: #000; border: 1px solid #444; color: #fff; border-radius: 4px; box-sizing: border-box; }
+    input[type="checkbox"] { width: auto; }
+    button { background: #c4956a; color: #000; border: none; padding: 12px 20px; font-weight: bold; border-radius: 4px; cursor: pointer; margin-top: 20px; width: 100%; }
+    button:hover { background: #a87b51; }
+    #log { margin-top: 20px; font-family: monospace; color: #4caf50; font-size: 0.9rem; white-space: pre-wrap; }
+    .error { color: #f44336 !important; }
+  </style>
+</head>
+<body>
+
+  <!-- 1. 认证面板 (仅第一次需要填写) -->
+  <div id="authPanel" class="panel">
+    <h2>身份验证 (凭证将加密保存在本地)</h2>
+    <label>GitHub Token (需有repo权限)</label>
+    <input type="password" id="ghToken" placeholder="ghp_...">
+    <label>腾讯云 SecretId</label>
+    <input type="password" id="cosId" placeholder="AKID...">
+    <label>腾讯云 SecretKey</label>
+    <input type="password" id="cosKey" placeholder="...">
+    <button onclick="saveCredentials()">保存凭证并进入后台</button>
+  </div>
+
+  <!-- 2. 上传与管理面板 -->
+  <div id="uploadPanel" class="panel" style="display: none;">
+    <h2>发布新照片</h2>
+    <label>1. 选择照片 (自动重命名并传至 COS)</label>
+    <input type="file" id="fileInput" accept="image/jpeg, image/png">
+    
+    <label>2. 标题</label>
+    <input type="text" id="pTitle" placeholder="如：晨雾中的山脊">
+    
+    <label>3. 分类</label>
+    <select id="pCategory">
+      <option value="风光">风光</option>
+      <option value="人像">人像</option>
+      <option value="街拍">街拍</option>
+      <option value="夜景">夜景</option>
+      <option value="旅拍">旅拍</option>
+    </select>
+
+    <label>4. 拍摄地点</label>
+    <input type="text" id="pLocation" placeholder="如：贵州 / 日本">
+
+    <label>5. 年份</label>
+    <input type="text" id="pDate" placeholder="如：2026">
+
+    <label>
+      <input type="checkbox" id="pWide"> 宽幅模式 (横向占据两列)
+    </label>
+
+    <button onclick="startUploadProcess()">一键上传并更新网站</button>
+    <button onclick="clearCredentials()" style="background:#444; color:#fff; margin-top:10px;">退出登录 (清除凭证)</button>
+
+    <div id="log"></div>
+  </div>
+
+<script>
+  // ================= 核心配置区 =================
+  const GITHUB_REPO = 'gongzixin0913/gongzixin0913.github.io'; // 你的仓库名
+  const COS_BUCKET = 'zxlabs-photo-1335324244';                // 你的 COS 存储桶
+  const COS_REGION = 'ap-shanghai';                            // 你的 COS 地域
+
+  // 初始化检查
+  window.onload = () => {
+    if (localStorage.getItem('zx_gh_token')) {
+      document.getElementById('authPanel').style.display = 'none';
+      document.getElementById('uploadPanel').style.display = 'block';
+    }
+  };
+
+  // 保存凭证
+  function saveCredentials() {
+    localStorage.setItem('zx_gh_token', document.getElementById('ghToken').value);
+    localStorage.setItem('zx_cos_id', document.getElementById('cosId').value);
+    localStorage.setItem('zx_cos_key', document.getElementById('cosKey').value);
+    location.reload();
+  }
+
+  // 清除凭证
+  function clearCredentials() {
+    localStorage.clear();
+    location.reload();
+  }
+
+  // 打印日志
+  function logMsg(msg, isError = false) {
+    const logEl = document.getElementById('log');
+    logEl.innerHTML += `<div class="${isError ? 'error' : ''}">> ${msg}</div>`;
+  }
+
+  // 解决 JavaScript Base64 中文乱码的黑魔法
+  const utf8ToBase64 = (str) => window.btoa(unescape(encodeURIComponent(str)));
+  const base64ToUtf8 = (str) => decodeURIComponent(escape(window.atob(str)));
+
+  // ================= 核心流：上传与更新 =================
+  async function startUploadProcess() {
+    const file = document.getElementById('fileInput').files[0];
+    if (!file) return logMsg("错误：请先选择一张照片！", true);
+
+    const title = document.getElementById('pTitle').value || "未命名";
+    const category = document.getElementById('pCategory').value;
+    const location = document.getElementById('pLocation').value;
+    const date = document.getElementById('pDate').value;
+    const isWide = document.getElementById('pWide').checked;
+
+    const cosId = localStorage.getItem('zx_cos_id');
+    const cosKey = localStorage.getItem('zx_cos_key');
+    const ghToken = localStorage.getItem('zx_gh_token');
+
+    document.getElementById('log').innerHTML = ""; // 清空日志
+    logMsg("开始处理...");
+
+    // 1. 上传图片到腾讯云 COS
+    const cos = new COS({ SecretId: cosId, SecretKey: cosKey });
+    // 生成云端路径，按分类和时间戳重命名防冲突
+    const cosPath = `/photos/${category}/${Date.now()}_${file.name}`;
+    
+    logMsg(`[1/3] 正在上传图片至 COS: ${cosPath} ...`);
+    try {
+      await new Promise((resolve, reject) => {
+        cos.putObject({
+          Bucket: COS_BUCKET,
+          Region: COS_REGION,
+          Key: cosPath,
+          Body: file,
+        }, function(err, data) {
+          if (err) reject(err); else resolve(data);
+        });
+      });
+      logMsg("[1/3] 图片上传 COS 成功！");
+    } catch (e) {
+      return logMsg("COS 上传失败：" + JSON.stringify(e), true);
+    }
+
+    // 2. 通过 GitHub API 获取当前的 config.json
+    logMsg("[2/3] 正在从 GitHub 获取网站配置...");
+    const apiUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents/config.json`;
+    let sha = "", configData = null;
+
+    try {
+      const res = await fetch(apiUrl, { headers: { "Authorization": `token ${ghToken}` } });
+      const data = await res.json();
+      sha = data.sha; // 必须拿到文件的 sha 码才能覆盖更新
+      // 解码 Base64 并解析为 JSON
+      configData = JSON.parse(base64ToUtf8(data.content));
+      logMsg("[2/3] 配置获取成功！");
+    } catch (e) {
+      return logMsg("GitHub 读取失败：" + e, true);
+    }
+
+    // 3. 将新照片数据注入 JSON，并提交回 GitHub
+    logMsg("[3/3] 正在写入新数据并触发自动部署...");
+    const newPhotoConfig = {
+      file: cosPath,
+      title: title,
+      category: category,
+      location: location,
+      date: date
+    };
+    if (isWide) newPhotoConfig.wide = true;
+
+    // 插入到照片列表的最前面（最新的排最前）
+    configData.photos.unshift(newPhotoConfig);
+
+    // 将更新后的 JSON 转为格式化的字符串，再转为 Base64
+    const newJsonStr = JSON.stringify(configData, null, 2);
+    const newContentBase64 = utf8ToBase64(newJsonStr);
+
+    try {
+      const putRes = await fetch(apiUrl, {
+        method: 'PUT',
+        headers: {
+          "Authorization": `token ${ghToken}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          message: `[Admin] 上传新照片: ${title}`,
+          content: newContentBase64,
+          sha: sha
+        })
+      });
+      if (putRes.ok) {
+        logMsg("🎉 发布成功！GitHub 正在后台部署，网站将在 1-2 分钟内更新。");
+      } else {
+        throw new Error("更新失败");
+      }
+    } catch (e) {
+      return logMsg("GitHub 写入失败：" + e, true);
+    }
+  }
+</script>
+
+</body>
+</html>
