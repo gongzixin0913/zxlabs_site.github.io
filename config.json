@@ -7,6 +7,13 @@
     "footer": "© 2026 ZX Labs · Powered by GitHub Pages"
   },
 
+  "admin": {
+    "password_hash": "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8",
+    "github_repo": "gongzixin0913/gongzixin0913.github.io",
+    "cos_bucket": "zxlabs-photo-1335324244",
+    "cos_region": "ap-shanghai"
+  },
+
   "about": {
     "name": "子昕",
     "bio": [
@@ -22,24 +29,12 @@
   },
 
   "contact": [
-    { "icon": "📧", "text": "邮箱：gongzixin1999@outlook.com", "link": "" },
+    { "icon": "📧", "text": "邮箱：gongzixin1999@outlook.com", "link": "mailto:gongzixin1999@outlook.com" },
     { "icon": "📱", "text": "微信: YourWechatID", "link": "" },
     { "icon": "📸", "text": "小红书: @子昕", "link": "" }
   ],
 
-  "categories": ["风光", "人像", "街拍", "夜景","旅拍"],
+  "categories": ["风光", "人像", "街拍", "夜景", "旅拍"],
 
-  "cos_base": "https://zxlabs-photo-1335324244.cos.ap-shanghai.myqcloud.com",
-
-  "photos": [
-    {
-      "file": "/photo/street/DSCF9565.JPG",
-      "title": "晨雾中的山脊",
-      "category": "风光",
-      "location": "云南",
-      "date": "2024",
-      "wide": true
-    }
-    
-  ]
+  "cos_base": "https://zxlabs-photo-1335324244.cos.ap-shanghai.myqcloud.com"
 }
