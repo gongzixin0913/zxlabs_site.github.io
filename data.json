@@ -1,3 +1,14 @@
 {
-  "photos": []
+  "photos": [
+    {
+      "file": "/photo/street/DSCF9565.JPG",
+      "title": "晨雾中的山脊",
+      "category": "风光",
+      "location": "云南",
+      "date": "2024",
+      "tags": [],
+      "notes": "",
+      "wide": true
+    }
+  ]
 }
