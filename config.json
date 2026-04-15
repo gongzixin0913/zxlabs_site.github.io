@@ -14,11 +14,22 @@
     "cos_region": "ap-shanghai"
   },
 
+  "watermark": {
+    "text": "zxlabs.cn · 子昕",
+    "fontsize": 16,
+    "opacity": 35,
+    "position": "southeast"
+  },
+
+  "copyright": {
+    "notice": "本站所有照片版权归作者「子昕」所有。\n如需获取原图或商业授权，请联系：gongzixin1999@outlook.com"
+  },
+
   "about": {
     "name": "子昕",
     "bio": [
       "独立摄影师，常驻上海。喜欢用镜头记录旅途中的光影瞬间，尤其钟爱自然风光和城市夜景。",
-      "拍摄设备：尼康 Z5 / Fujifilm X-T30"
+      "拍摄设备：Nikon Z5 / Fujifilm X-T30"
     ],
     "avatar": "",
     "stats": [
@@ -31,7 +42,7 @@
   "contact": [
     { "icon": "📧", "text": "邮箱：gongzixin1999@outlook.com", "link": "mailto:gongzixin1999@outlook.com" },
     { "icon": "📱", "text": "微信: YourWechatID", "link": "" },
-    { "icon": "📸", "text": "小红书: @子昕", "link": "" }
+    { "icon": "📸", "text": "小红书: @子昕", "link": "https://www.xiaohongshu.com/user/profile/606db15e000000000101db6e" }
   ],
 
   "categories": ["风光", "人像", "街拍", "夜景", "旅拍"],
