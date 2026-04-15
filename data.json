@@ -2,16 +2,19 @@
   "photos": [
     {
       "file": "/photo/风景/1776195899292__DSF1561.JPG",
-      "title": "_DSF1561",
+      "title": "眺望西湖",
       "category": "旅拍",
-      "location": "杭州",
+      "location": "杭州·西湖",
       "date": "2025.07",
       "tags": [
         "杭州",
         "旅拍",
-        "风景"
+        "风景",
+        "人像",
+        "背影"
       ],
-      "notes": ""
+      "notes": "如果使用85定焦可能效果更好。",
+      "tall": true
     },
     {
       "file": "/photo/风景/1776195888363__DSF1345.JPG",
