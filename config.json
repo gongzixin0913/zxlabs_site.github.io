@@ -45,7 +45,7 @@
     { "icon": "📸", "text": "小红书: @子昕", "link": "https://www.xiaohongshu.com/user/profile/606db15e000000000101db6e" }
   ],
 
-  "categories": ["风光", "人像", "街拍", ],
+  "categories": ["风光", "人像", "街拍" ],
 
   "cos_base": "https://zxlabs-photo-1335324244.cos.ap-shanghai.myqcloud.com"
 }
