@@ -6,25 +6,22 @@
     "eyebrow": "Photography Portfolio",
     "footer": "© 2026 ZX·Labs · Powered by GitHub Pages"
   },
-
   "admin": {
     "password_hash": "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8",
     "github_repo": "gongzixin0913/gongzixin0913.github.io",
     "cos_bucket": "zxlabs-photo-1335324244",
     "cos_region": "ap-shanghai"
   },
-
   "watermark": {
-    "text": "zxlabs.cn · 子昕",
-    "fontsize": 16,
-    "opacity": 35,
-    "position": "southeast"
+    "text": "zxlabs.cn   by @子昕",
+    "fontsize": 30,
+    "opacity": 81,
+    "position": "southeast",
+    "color": "I2M0OTU2YQ=="
   },
-
   "copyright": {
     "notice": "本站所有照片版权归作者「子昕」所有。\n如需获取原图或商业授权，请联系：gongzixin1999@outlook.com\n 📸 小红书: @子昕"
   },
-
   "about": {
     "name": "子昕",
     "bio": [
@@ -33,19 +30,41 @@
     ],
     "avatar": "https://zxlabs-photo-1335324244.cos.ap-shanghai.myqcloud.com/photo/ZX_self.JPG",
     "stats": [
-      { "value": "4", "label": "年摄影经历" },
-      { "value": "20+", "label": "城市足迹" },
-      { "value": "100+", "label": "精选作品" }
+      {
+        "value": "4",
+        "label": "年摄影经历"
+      },
+      {
+        "value": "20+",
+        "label": "城市足迹"
+      },
+      {
+        "value": "200+",
+        "label": "精选作品"
+      }
     ]
   },
-
   "contact": [
-    { "icon": "📧", "text": "邮箱1：gongzixin1999@outlook.com", "link": "mailto:gongzixin1999@outlook.com" },
-    { "icon": "📱", "text": "QQ: 1148189992", "link": "" },
-    { "icon": "📸", "text": "小红书: @子昕", "link": "https://www.xiaohongshu.com/user/profile/606db15e000000000101db6e" }
+    {
+      "icon": "📧",
+      "text": "邮箱1：gongzixin1999@outlook.com",
+      "link": "mailto:gongzixin1999@outlook.com"
+    },
+    {
+      "icon": "📸",
+      "text": "小红书: @子昕",
+      "link": "https://www.xiaohongshu.com/user/profile/606db15e000000000101db6e"
+    },
+    {
+      "icon": "📱",
+      "text": "QQ: 1148189992",
+      "link": ""
+    }
   ],
-
-  "categories": ["风光", "人像", "街拍" ],
-
+  "categories": [
+    "风光",
+    "人像",
+    "街拍"
+  ],
   "cos_base": "https://zxlabs-photo-1335324244.cos.ap-shanghai.myqcloud.com"
 }
