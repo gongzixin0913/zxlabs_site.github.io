@@ -101,11 +101,28 @@
 .edit-panel .ep-fields .row{margin-bottom:0}
 .edit-panel .ep-move{margin-top:.6rem;padding-top:.6rem;border-top:1px solid var(--border)}
 
+/* Orphan scanner */
+.orphan-item{background:var(--bg);border:1px solid var(--border);border-radius:var(--r);margin-bottom:.6rem;overflow:hidden}
+.orphan-header{display:flex;align-items:center;gap:.8rem;padding:.7rem 1rem}
+.orphan-header .o-check{flex-shrink:0}.orphan-header .o-check input{width:16px;height:16px;accent-color:var(--green)}
+.orphan-header .o-thumb{width:70px;height:48px;object-fit:cover;border-radius:4px;background:var(--bg3);flex-shrink:0}
+.orphan-header .o-path{flex:1;font-family:var(--mono);font-size:.78rem;color:var(--dim);word-break:break-all}
+.orphan-header .o-size{font-size:.72rem;color:var(--muted);flex-shrink:0;margin:0 .5rem}
+.orphan-header .o-actions{display:flex;gap:.3rem;flex-shrink:0}
+.orphan-edit{display:none;padding:1rem;border-top:1px solid var(--border);background:var(--bg2)}
+.orphan-edit.open{display:block}
+.orphan-edit-inner{display:grid;grid-template-columns:180px 1fr;gap:1rem}
+.orphan-edit .oe-preview{width:180px;border-radius:var(--r);overflow:hidden;background:var(--bg3)}
+.orphan-edit .oe-preview img{width:100%;display:block}
+.scan-stats{font-size:.82rem;color:var(--dim);margin-bottom:.8rem}
+.scan-stats strong{color:var(--accent)}
+
 @media(max-width:640px){
   .wrap{padding:1rem}
   .queue-item{grid-template-columns:100px 1fr 24px}.queue-item .q-thumb{width:100px;height:70px}
   .row{flex-direction:column;gap:.4rem}.field{min-width:100%}
   .edit-panel-inner{grid-template-columns:1fr}.edit-panel .ep-preview{width:100%;max-height:200px}
+  .orphan-edit-inner{grid-template-columns:1fr}.orphan-edit .oe-preview{width:100%;max-height:160px}
   .tab-btn{padding:.6rem 1rem;font-size:.82rem}
 }
 </style>
@@ -201,6 +218,28 @@
         <div id="editList"></div>
       </div>
 
+      <!-- Orphan Scanner -->
+      <div class="card">
+        <div class="collapsible-header" onclick="toggleOrphanSection()">
+          <h2 style="margin-bottom:0">🔍 未收录照片 <span id="orphanCount" style="color:var(--muted);font-weight:300"></span></h2>
+          <span class="toggle-icon" id="orphanToggle">▼</span>
+        </div>
+        <div class="collapsible-body" id="orphanBody">
+          <p class="hint" style="margin-top:.6rem">扫描 COS 存储桶，找出存在于存储桶但未收录到网站的照片。可编辑属性后添加。</p>
+          <div style="margin-bottom:.8rem">
+            <button class="btn" id="scanBtn" onclick="scanOrphans()">扫描存储桶</button>
+          </div>
+          <div id="scanStats" class="scan-stats hidden"></div>
+          <div id="orphanToolbar" class="edit-toolbar hidden">
+            <label class="check"><input type="checkbox" id="orphanSelectAll" onchange="toggleOrphanSelectAll(this.checked)"> 全选</label>
+            <span class="sel-count" id="orphanSelCount">已选 0 张</span>
+            <button class="btn btn-sm" style="border-color:var(--green);color:var(--green)" onclick="batchAddOrphans()">批量添加到网站</button>
+            <button class="btn btn-sm btn-danger" onclick="batchDeleteOrphans()">批量从 COS 删除</button>
+          </div>
+          <div id="orphanList"></div>
+        </div>
+      </div>
+
       <div class="card"><h2>📋 操作日志</h2><div class="log" id="editLog"><div class="info">等待操作...</div></div></div>
     </div>
 
@@ -213,6 +252,7 @@ let CONFIG=null,DATA=null,COS_CLIENT=null;
 let queue=[],qid=0,uploadMaxWidth=1600,uploadQuality=0.85,selectedFolder='photos/';
 let selectedIndices=new Set(),expandedIndex=-1;
 let foldersLoaded=false,foldersList=[];
+let orphanFiles=[],orphanSelected=new Set(),orphanExpanded=-1;
 
 (async function(){
   const[c,d]=await Promise.all([fetch('./config.json?'+Date.now()),fetch('./data.json?'+Date.now())]);
@@ -451,8 +491,262 @@ async function movePhoto(i){
   }catch(e){editLog(`✗ 失败: ${e.message}（原文件未删除）`,'err')}
 }
 
-function batchDelete(){if(!selectedIndices.size)return;if(!confirm(`确定删除 ${selectedIndices.size} 张？`))return;[...selectedIndices].sort((a,b)=>b-a).forEach(i=>DATA.photos.splice(i,1));DATA._dirty=true;editLog(`已移除 ${selectedIndices.size} 张`,'info');renderEditList()}
-function delPhoto(i){if(!confirm('确定删除「'+DATA.photos[i].title+'」？'))return;DATA.photos.splice(i,1);DATA._dirty=true;editLog('已移除','info');renderEditList()}
+async function batchDelete(){
+  if(!selectedIndices.size)return;
+  if(!COS_CLIENT){editLog('请先保存 COS 凭证','err');return}
+  const items=[...selectedIndices].map(i=>({idx:i,title:DATA.photos[i].title,file:DATA.photos[i].file}));
+  if(!confirm(`确定删除 ${items.length} 张照片？\n\n⚠️ 将同时删除 COS 存储桶中的文件！\n\n${items.slice(0,8).map(x=>x.title).join('\n')}${items.length>8?'\n...等 '+items.length+' 张':''}`))return;
+
+  editLog(`批量删除 ${items.length} 张...`,'info');
+  let deleted=0;
+  // 从后往前删，避免索引错位
+  const sorted=items.sort((a,b)=>b.idx-a.idx);
+  for(const item of sorted){
+    const cosKey=item.file.replace(/^\//,'');
+    try{
+      await new Promise((res,rej)=>{COS_CLIENT.deleteObject({Bucket:CONFIG.admin.cos_bucket,Region:CONFIG.admin.cos_region,Key:cosKey},(e,d)=>e?rej(e):res(d))});
+      DATA.photos.splice(item.idx,1);
+      deleted++;
+      editLog(`✓ 已删除: ${item.title}`,'ok');
+    }catch(e){
+      editLog(`✗ COS 删除失败: ${item.title} (${e.message})，已从列表移除`,'err');
+      DATA.photos.splice(item.idx,1); // 即使 COS 删失败也从列表移除
+    }
+  }
+  DATA._dirty=true;
+  editLog(`删除完成: ${deleted}/${items.length} 个 COS 文件已清除，发布后生效`,'info');
+  renderEditList();
+}
+
+async function delPhoto(i){
+  if(!COS_CLIENT){editLog('请先保存 COS 凭证','err');return}
+  const p=DATA.photos[i];
+  if(!confirm(`确定删除「${p.title}」？\n\n⚠️ 将同时删除 COS 存储桶中的文件：\n${p.file}`))return;
+
+  const cosKey=p.file.replace(/^\//,'');
+  editLog(`删除 COS 文件: ${cosKey}`,'info');
+  try{
+    await new Promise((res,rej)=>{COS_CLIENT.deleteObject({Bucket:CONFIG.admin.cos_bucket,Region:CONFIG.admin.cos_region,Key:cosKey},(e,d)=>e?rej(e):res(d))});
+    editLog(`✓ COS 文件已删除`,'ok');
+  }catch(e){
+    editLog(`✗ COS 删除失败: ${e.message}，仍从列表移除`,'err');
+  }
+  DATA.photos.splice(i,1);
+  DATA._dirty=true;
+  editLog('✓ 已从列表移除，发布后生效','ok');
+  renderEditList();
+}
+
+/* ═══════════════════════════════════════
+   ORPHAN SCANNER (未收录照片)
+   ═══════════════════════════════════════ */
+function toggleOrphanSection(){
+  document.getElementById('orphanBody').classList.toggle('collapsed');
+  document.getElementById('orphanToggle').classList.toggle('collapsed');
+}
+
+async function scanOrphans(){
+  if(!COS_CLIENT){editLog('请先保存 COS 凭证','err');return}
+  const btn=document.getElementById('scanBtn');
+  btn.textContent='扫描中...';btn.disabled=true;
+  editLog('扫描 COS 存储桶中的所有图片文件...','info');
+
+  try{
+    const allFiles=await listAllFiles('');
+    const imageExts=['.jpg','.jpeg','.png','.gif','.webp','.bmp'];
+    const imageFiles=allFiles.filter(f=>{
+      const lower=f.Key.toLowerCase();
+      return imageExts.some(ext=>lower.endsWith(ext));
+    });
+
+    // Compare with data.json
+    const trackedPaths=new Set(DATA.photos.map(p=>p.file.replace(/^\//,'')));
+    orphanFiles=imageFiles.filter(f=>!trackedPaths.has(f.Key)).map(f=>({
+      key:f.Key,
+      size:parseInt(f.Size)||0,
+      lastModified:f.LastModified,
+      // Pre-fill editable fields
+      title:f.Key.split('/').pop().replace(/\.[^.]+$/,''),
+      category:CONFIG.categories[0]||'',
+      location:'',
+      date:new Date().getFullYear().toString(),
+      tags:'',
+      notes:'',
+      wide:false,
+      tall:false
+    }));
+
+    // Auto-detect orientation for orphans
+    for(const o of orphanFiles){
+      try{
+        const url=CONFIG.cos_base+'/'+o.key+'?imageMogr2/thumbnail/10x';
+        // We use imageInfo API instead of loading full image
+        const infoUrl=CONFIG.cos_base+'/'+o.key+'?imageInfo';
+        const res=await fetch(infoUrl);
+        if(res.ok){
+          const info=await res.json();
+          const w=parseInt(info.width),h=parseInt(info.height);
+          if(w&&h){const r=w/h;if(r>=1.8)o.wide=true;else if(r<=0.75)o.tall=true}
+        }
+      }catch(e){}
+    }
+
+    const stats=document.getElementById('scanStats');
+    stats.classList.remove('hidden');
+    stats.innerHTML=`COS 中共 <strong>${imageFiles.length}</strong> 张图片，其中 <strong>${orphanFiles.length}</strong> 张未收录到网站。`;
+
+    orphanSelected.clear();orphanExpanded=-1;
+    document.getElementById('orphanToolbar').classList.toggle('hidden',orphanFiles.length===0);
+    renderOrphans();
+    editLog(`扫描完成: ${orphanFiles.length} 张未收录`,'ok');
+  }catch(e){
+    editLog('扫描失败: '+e.message,'err');
+  }
+  btn.textContent='重新扫描';btn.disabled=false;
+}
+
+async function listAllFiles(marker){
+  const result=[];
+  let m=marker;
+  do{
+    const data=await new Promise((res,rej)=>{
+      COS_CLIENT.getBucket({
+        Bucket:CONFIG.admin.cos_bucket,Region:CONFIG.admin.cos_region,
+        MaxKeys:1000,Marker:m
+      },(err,d)=>err?rej(err):res(d));
+    });
+    result.push(...(data.Contents||[]));
+    m=data.IsTruncated==='true'?data.NextMarker:'';
+  }while(m);
+  return result;
+}
+
+function renderOrphans(){
+  const el=document.getElementById('orphanList');
+  if(!orphanFiles.length){el.innerHTML='<p class="hint">没有未收录的照片。</p>';return}
+  document.getElementById('orphanSelectAll').checked=false;
+  updateOrphanSelCount();
+
+  el.innerHTML=orphanFiles.map((o,i)=>`
+    <div class="orphan-item" id="oi-${i}">
+      <div class="orphan-header">
+        <div class="o-check" onclick="event.stopPropagation()"><input type="checkbox" onchange="toggleOrphanSel(${i},this.checked)"></div>
+        <img class="o-thumb" src="${CONFIG.cos_base}/${o.key}?imageMogr2/thumbnail/140x" onerror="this.style.opacity='.2'" onclick="toggleOrphanExpand(${i})">
+        <div class="o-path" onclick="toggleOrphanExpand(${i})">${o.key}</div>
+        <div class="o-size">${fmtSize(o.size)}</div>
+        <div class="o-actions">
+          <button class="btn btn-sm" style="border-color:var(--green);color:var(--green)" onclick="addOrphan(${i})">添加</button>
+          <button class="btn btn-sm" onclick="toggleOrphanExpand(${i})">编辑</button>
+        </div>
+      </div>
+      <div class="orphan-edit" id="oe-${i}"></div>
+    </div>
+  `).join('');
+}
+
+function toggleOrphanExpand(i){
+  if(orphanExpanded>=0&&orphanExpanded!==i){
+    const old=document.getElementById('oe-'+orphanExpanded);
+    if(old){old.classList.remove('open');old.innerHTML=''}
+  }
+  const panel=document.getElementById('oe-'+i);
+  if(orphanExpanded===i){panel.classList.remove('open');panel.innerHTML='';orphanExpanded=-1;return}
+  orphanExpanded=i;
+  const o=orphanFiles[i];
+  const catOpts=CONFIG.categories.map(c=>`<option value="${c}"${c===o.category?' selected':''}>${c}</option>`).join('');
+  panel.innerHTML=`<div class="orphan-edit-inner">
+    <div class="oe-preview"><img src="${CONFIG.cos_base}/${o.key}?imageMogr2/thumbnail/360x" onerror="this.style.opacity='.3'"></div>
+    <div class="ep-fields">
+      <div class="row"><div class="field"><label>标题</label><input value="${esc(o.title)}" onchange="orphanUpd(${i},'title',this.value)"></div></div>
+      <div class="row"><div class="field"><label>分类</label><select onchange="orphanUpd(${i},'category',this.value)">${catOpts}</select></div><div class="field"><label>地点</label><input value="${esc(o.location)}" onchange="orphanUpd(${i},'location',this.value)"></div><div class="field"><label>年份</label><input value="${esc(o.date)}" onchange="orphanUpd(${i},'date',this.value)"></div></div>
+      <div class="row"><div class="field"><label>标签（逗号分隔）</label><input value="${esc(o.tags)}" onchange="orphanUpd(${i},'tags',this.value)"></div></div>
+      <div class="row"><div class="field"><label>拍摄手记</label><textarea rows="2" onchange="orphanUpd(${i},'notes',this.value)">${esc(o.notes)}</textarea></div></div>
+      <div class="row">
+        <label class="check"><input type="checkbox" ${o.wide?'checked':''} onchange="orphanUpd(${i},'wide',this.checked)"> 宽幅</label>
+        <label class="check"><input type="checkbox" ${o.tall?'checked':''} onchange="orphanUpd(${i},'tall',this.checked)"> 竖版</label>
+        ${o.wide||o.tall?'<span style="font-size:.68rem;color:var(--blue)">(自动识别)</span>':''}
+      </div>
+      <div style="margin-top:.5rem"><button class="btn btn-sm" style="border-color:var(--green);color:var(--green)" onclick="addOrphan(${i})">✓ 添加到网站</button></div>
+    </div>
+  </div>`;
+  panel.classList.add('open');
+}
+
+function orphanUpd(i,k,v){orphanFiles[i][k]=v}
+
+function addOrphan(i){
+  const o=orphanFiles[i];
+  const entry={
+    file:'/'+o.key,
+    title:o.title,
+    category:o.category,
+    location:o.location,
+    date:o.date,
+    tags:o.tags?o.tags.split(/[,，]/).map(t=>t.trim()).filter(Boolean):[],
+    notes:o.notes||''
+  };
+  if(o.wide)entry.wide=true;
+  if(o.tall)entry.tall=true;
+  DATA.photos.unshift(entry);
+  DATA._dirty=true;
+  orphanFiles.splice(i,1);
+  orphanSelected.delete(i);
+  editLog(`✓ 已添加「${entry.title}」，发布后生效`,'ok');
+  document.getElementById('scanStats').innerHTML=`剩余 <strong>${orphanFiles.length}</strong> 张未收录。`;
+  document.getElementById('editCount').textContent=`(${DATA.photos.length})`;
+  orphanExpanded=-1;
+  renderOrphans();
+}
+
+/* Orphan batch operations */
+function toggleOrphanSel(i,checked){if(checked)orphanSelected.add(i);else orphanSelected.delete(i);updateOrphanSelCount()}
+function toggleOrphanSelectAll(checked){document.querySelectorAll('.o-check input').forEach((b,idx)=>{b.checked=checked;if(checked)orphanSelected.add(idx);else orphanSelected.delete(idx)});updateOrphanSelCount()}
+function updateOrphanSelCount(){document.getElementById('orphanSelCount').textContent=`已选 ${orphanSelected.size} 张`}
+
+function batchAddOrphans(){
+  if(!orphanSelected.size){editLog('请先勾选照片','err');return}
+  if(!confirm(`确认添加 ${orphanSelected.size} 张照片到网站？`))return;
+  // Sort descending to avoid index shift
+  const sorted=[...orphanSelected].sort((a,b)=>b-a);
+  let added=0;
+  sorted.forEach(i=>{
+    const o=orphanFiles[i];
+    const entry={file:'/'+o.key,title:o.title,category:o.category,location:o.location,date:o.date,
+      tags:o.tags?o.tags.split(/[,，]/).map(t=>t.trim()).filter(Boolean):[],notes:o.notes||''};
+    if(o.wide)entry.wide=true;if(o.tall)entry.tall=true;
+    DATA.photos.unshift(entry);
+    orphanFiles.splice(i,1);
+    added++;
+  });
+  DATA._dirty=true;
+  orphanSelected.clear();orphanExpanded=-1;
+  editLog(`✓ 已添加 ${added} 张，发布后生效`,'ok');
+  document.getElementById('scanStats').innerHTML=`剩余 <strong>${orphanFiles.length}</strong> 张未收录。`;
+  document.getElementById('editCount').textContent=`(${DATA.photos.length})`;
+  renderOrphans();
+}
+
+async function batchDeleteOrphans(){
+  if(!orphanSelected.size){editLog('请先勾选','err');return}
+  if(!COS_CLIENT){editLog('请先保存凭证','err');return}
+  const names=[...orphanSelected].map(i=>orphanFiles[i].key.split('/').pop());
+  if(!confirm(`⚠️ 确定从 COS 永久删除 ${names.length} 张照片？\n\n${names.slice(0,8).join('\n')}${names.length>8?'\n...等 '+names.length+' 张':''}\n\n此操作不可恢复！`))return;
+
+  editLog(`删除 ${orphanSelected.size} 张...`,'info');
+  const sorted=[...orphanSelected].sort((a,b)=>b-a);
+  let deleted=0;
+  for(const i of sorted){
+    try{
+      await new Promise((res,rej)=>{COS_CLIENT.deleteObject({Bucket:CONFIG.admin.cos_bucket,Region:CONFIG.admin.cos_region,Key:orphanFiles[i].key},(e,d)=>e?rej(e):res(d))});
+      editLog(`✓ 已删除: ${orphanFiles[i].key.split('/').pop()}`,'ok');
+      orphanFiles.splice(i,1);deleted++;
+    }catch(e){editLog(`✗ ${orphanFiles[i].key}: ${e.message}`,'err')}
+  }
+  orphanSelected.clear();orphanExpanded=-1;
+  editLog(`删除完成: ${deleted} 张`,'info');
+  document.getElementById('scanStats').innerHTML=`剩余 <strong>${orphanFiles.length}</strong> 张未收录。`;
+  renderOrphans();
+}
 
 /* ═══ PUBLISH ═══ */
 const u2b=s=>btoa(unescape(encodeURIComponent(s)));
