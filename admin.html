@@ -470,7 +470,7 @@ function renderEditList(){
   }).join('');
 }
 
-function toggleExpand(i){
+async function toggleExpand(i){
   // Close previous
   if(expandedIndex>=0&&expandedIndex!==i){
     const oldPanel=document.getElementById('ep-'+expandedIndex);
@@ -491,14 +491,28 @@ function toggleExpand(i){
   const p=DATA.photos[i];
   const catOpts=CONFIG.categories.map(c=>`<option value="${c}"${c===p.category?' selected':''}>${c}</option>`).join('');
 
+  // EXIF display
+  const ex=p.exif;
+  let exifHtml='';
+  if(ex&&ex!==false){
+    const parts=[ex.make,ex.model,ex.aperture,ex.shutter,ex.iso?'ISO '+ex.iso:'',ex.focal].filter(Boolean);
+    exifHtml=`<div style="font-size:.78rem;color:var(--dim);margin-top:.4rem;padding:.4rem .6rem;background:var(--bg);border-radius:var(--r)">📷 ${parts.join(' · ')||'无拍摄参数'}</div>`;
+  }
+
+  const dtVal=ex&&ex.datetime?ex.datetime:'';
+
   panel.innerHTML=`<div class="edit-panel-inner">
     <div class="ep-preview"><img src="${CONFIG.cos_base}${p.file}?imageMogr2/thumbnail/440x" onerror="this.style.opacity='.3'"></div>
     <div class="ep-fields">
       <div class="row"><div class="field"><label>标题</label><input value="${esc(p.title)}" onchange="exUpd(${i},'title',this.value)"></div></div>
-      <div class="row"><div class="field"><label>分类</label><select onchange="exUpd(${i},'category',this.value)">${catOpts}</select></div><div class="field"><label>地点</label><input value="${esc(p.location)}" onchange="exUpd(${i},'location',this.value)"></div><div class="field"><label>年份</label><input value="${esc(p.date)}" onchange="exUpd(${i},'date',this.value)"></div></div>
+      <div class="row"><div class="field"><label>分类</label><select onchange="exUpd(${i},'category',this.value)">${catOpts}</select></div><div class="field"><label>地点</label><input value="${esc(p.location)}" onchange="exUpd(${i},'location',this.value)"></div><div class="field"><label>时间</label><input value="${esc(p.date)}" onchange="exUpd(${i},'date',this.value)"></div></div>
       <div class="row"><div class="field"><label>标签（逗号分隔）</label><input value="${esc((p.tags||[]).join(', '))}" onchange="exUpdTags(${i},this.value)"></div></div>
       <div class="row"><div class="field"><label>拍摄手记</label><textarea rows="3" onchange="exUpd(${i},'notes',this.value)">${esc(p.notes||'')}</textarea></div></div>
       <div class="row"><label class="check"><input type="checkbox" ${p.wide?'checked':''} onchange="exUpd(${i},'wide',this.checked)"> 宽幅</label><label class="check"><input type="checkbox" ${p.tall?'checked':''} onchange="exUpd(${i},'tall',this.checked)"> 竖版</label></div>
+      <div class="row"><div class="field"><label>拍摄时间 (EXIF)</label><input value="${esc(dtVal)}" onchange="exUpdExifDt(${i},this.value)" placeholder="如：2024:06:15 14:30:00"></div>
+      ${p.exif===undefined?`<button class="btn btn-sm" style="align-self:flex-end" onclick="fetchExifForPhoto(${i})">获取 EXIF</button>`:''}
+      </div>
+      ${exifHtml}
       <div class="ep-move">
         <p class="hint" style="margin-bottom:.4rem"><strong>移动存储位置</strong></p>
         <div class="row"><div class="field"><label>目标文件夹</label><select id="moveSel-${i}">${getFolderOptions()}</select></div><button class="btn btn-sm" style="align-self:flex-end" onclick="movePhoto(${i})">移动</button></div>
@@ -506,6 +520,25 @@ function toggleExpand(i){
     </div>
   </div>`;
   panel.classList.add('open');
+}
+
+async function fetchExifForPhoto(i){
+  editLog(`获取 EXIF: ${DATA.photos[i].title}...`,'info');
+  await enrichWithExif(DATA.photos[i]);
+  const ex=DATA.photos[i].exif;
+  if(ex&&ex.model)editLog(`✓ ${ex.model} ${ex.aperture} ${ex.shutter}`,'ok');
+  else editLog('未找到 EXIF 数据','info');
+  DATA._dirty=true;
+  toggleExpand(i);toggleExpand(i); // close and reopen to refresh
+}
+
+function exUpdExifDt(i,v){
+  if(!DATA.photos[i].exif||DATA.photos[i].exif===false)DATA.photos[i].exif={};
+  DATA.photos[i].exif.datetime=v;
+  // Auto-update date from datetime
+  const ym=exifDateToYM(v);
+  if(ym)DATA.photos[i].date=ym;
+  DATA._dirty=true;
 }
 
 function exUpd(i,k,v){DATA.photos[i][k]=v;DATA._dirty=true;
@@ -768,7 +801,7 @@ function toggleOrphanExpand(i){
 
 function orphanUpd(i,k,v){orphanFiles[i][k]=v}
 
-function addOrphan(i){
+async function addOrphan(i){
   const o=orphanFiles[i];
   const entry={
     file:'/'+o.key,
@@ -781,6 +814,9 @@ function addOrphan(i){
   };
   if(o.wide)entry.wide=true;
   if(o.tall)entry.tall=true;
+  editLog(`读取 EXIF: ${o.title}...`,'info');
+  await enrichWithExif(entry);
+  if(entry.exif&&entry.exif.model)editLog(`  ${entry.exif.model} ${entry.exif.aperture}`,'ok');
   DATA.photos.unshift(entry);
   DATA._dirty=true;
   orphanFiles.splice(i,1);
@@ -797,21 +833,22 @@ function toggleOrphanSel(i,checked){if(checked)orphanSelected.add(i);else orphan
 function toggleOrphanSelectAll(checked){document.querySelectorAll('.o-check input').forEach((b,idx)=>{b.checked=checked;if(checked)orphanSelected.add(idx);else orphanSelected.delete(idx)});updateOrphanSelCount()}
 function updateOrphanSelCount(){document.getElementById('orphanSelCount').textContent=`已选 ${orphanSelected.size} 张`}
 
-function batchAddOrphans(){
+async function batchAddOrphans(){
   if(!orphanSelected.size){editLog('请先勾选照片','err');return}
   if(!confirm(`确认添加 ${orphanSelected.size} 张照片到网站？`))return;
-  // Sort descending to avoid index shift
   const sorted=[...orphanSelected].sort((a,b)=>b-a);
   let added=0;
-  sorted.forEach(i=>{
+  editLog(`读取 EXIF (${sorted.length} 张)...`,'info');
+  for(const i of sorted){
     const o=orphanFiles[i];
     const entry={file:'/'+o.key,title:o.title,category:o.category,location:o.location,date:o.date,
       tags:o.tags?o.tags.split(/[,，]/).map(t=>t.trim()).filter(Boolean):[],notes:o.notes||''};
     if(o.wide)entry.wide=true;if(o.tall)entry.tall=true;
+    await enrichWithExif(entry);
     DATA.photos.unshift(entry);
     orphanFiles.splice(i,1);
     added++;
-  });
+  }
   DATA._dirty=true;
   orphanSelected.clear();orphanExpanded=-1;
   editLog(`✓ 已添加 ${added} 张，发布后生效`,'ok');
@@ -842,6 +879,60 @@ async function batchDeleteOrphans(){
   renderOrphans();
 }
 
+/* ═══ EXIF 获取（只请求一次，结果存入 data） ═══ */
+function parseExifVal(raw){
+  if(!raw)return '';
+  // Handle fractions like "8/1" → 8, "700/10" → 70
+  if(typeof raw==='string'&&raw.includes('/')){
+    const[a,b]=raw.split('/').map(Number);
+    if(b&&b!==0)return a/b;
+  }
+  return raw;
+}
+
+async function fetchExif(fileKey){
+  const url=CONFIG.cos_base+'/'+fileKey.replace(/^\//,'')+'?exif';
+  try{
+    const res=await fetch(url);
+    if(!res.ok)return false;
+    const d=await res.json();
+    if(!d||d.error_code)return false;
+
+    const get=k=>d[k]?.val||'';
+    const fnumber=parseExifVal(get('FNumber'));
+    const focal=parseExifVal(get('FocalLength'));
+    const datetime=get('DateTimeOriginal')||get('DateTime')||'';
+
+    return{
+      make:get('Make').replace(/\s*CORPORATION\s*/i,'').trim(),
+      model:get('Model').trim(),
+      aperture:fnumber?`f/${fnumber}`:'',
+      shutter:get('ExposureTime')?`${get('ExposureTime')}s`:'',
+      iso:get('ISOSpeedRatings'),
+      focal:focal?`${Math.round(focal)}mm`:'',
+      datetime:datetime
+    };
+  }catch(e){return false}
+}
+
+/* 从 EXIF datetime 提取年月: "2024:06:15 14:30:00" → "2024-06" */
+function exifDateToYM(dt){
+  if(!dt)return '';
+  const m=dt.match(/^(\d{4})[:\-](\d{2})/);
+  return m?`${m[1]}-${m[2]}`:'';
+}
+
+/* 为 data entry 补充 EXIF（如果还没有的话） */
+async function enrichWithExif(entry){
+  if(entry.exif!==undefined)return; // 已有或已标记无数据
+  const exif=await fetchExif(entry.file);
+  entry.exif=exif||false; // false = 已尝试过，无数据
+  if(exif&&exif.datetime){
+    const ym=exifDateToYM(exif.datetime);
+    if(ym&&!entry.date)entry.date=ym; // 仅在 date 为空时自动填充
+  }
+}
+
 /* ═══ PUBLISH ═══ */
 const u2b=s=>btoa(unescape(encodeURIComponent(s)));
 
@@ -867,6 +958,16 @@ async function publish(){
     }catch(e){item.status='error';setQS(item.id,'error');log(`✗ 上传失败: ${e.message}`,'err')}
     renderQueue();
   }
+
+  // Fetch EXIF for newly uploaded photos
+  if(successEntries.length>0){
+    log('读取拍摄参数 (EXIF)...','info');
+    for(const entry of successEntries){
+      await enrichWithExif(entry);
+      if(entry.exif&&entry.exif.model)log(`  ${entry.title}: ${entry.exif.model} ${entry.exif.aperture} ${entry.exif.shutter}`,'ok');
+    }
+  }
+
   successEntries.forEach(e=>DATA.photos.unshift(e));
 
   if(successEntries.length>0||DATA._dirty){
