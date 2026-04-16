@@ -228,7 +228,9 @@
       "category": "街拍",
       "location": "上海",
       "date": "2026",
-      "tags": [],
+      "tags": [
+        "鸟"
+      ],
       "notes": "",
       "exif": {
         "make": "",
@@ -246,7 +248,9 @@
       "category": "街拍",
       "location": "上海",
       "date": "2026",
-      "tags": [],
+      "tags": [
+        "鸟"
+      ],
       "notes": "",
       "exif": {
         "make": "",
