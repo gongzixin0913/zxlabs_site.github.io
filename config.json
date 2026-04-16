@@ -1,10 +1,10 @@
 {
   "site": {
     "logo": "ZX · Labs",
-    "title": "用镜头记录山川风月与佳人",
-    "subtitle": "每一次快门，都是一次对话",
+    "title": "用镜头记录时间的故事",
+    "subtitle": "每次快门，都是一次与世界对话",
     "eyebrow": "Photography Portfolio",
-    "footer": "© 2026 ZX Labs · Powered by GitHub Pages"
+    "footer": "© 2026 ZX·Labs · Powered by GitHub Pages"
   },
 
   "admin": {
@@ -28,7 +28,7 @@
   "about": {
     "name": "子昕",
     "bio": [
-      "独立摄影师，常驻上海。喜欢用镜头记录人生旅途中的光影瞬间，不求华美，但求那一瞬间的感觉。",
+      "独立摄影师，常驻上海。喜欢用镜头记录人生旅途中的光影瞬间，不求华美，但求一瞬之感。",
       "拍摄设备：Nikon Z5 / Fujifilm X-T30"
     ],
     "avatar": "https://zxlabs-photo-1335324244.cos.ap-shanghai.myqcloud.com/photo/ZX_self.JPG",
