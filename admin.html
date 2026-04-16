@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ZX Labs · 作者后台</title>
 <script src="https://unpkg.com/cos-js-sdk-v5/dist/cos-js-sdk-v5.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/exifr/dist/full.umd.js"></script>
 <style>
 :root{--bg:#080808;--bg2:#111;--bg3:#161616;--bg4:#1e1e1e;--text:#e8e4df;--dim:#a09a94;--muted:#6b6560;--accent:#c4956a;--accent-s:rgba(196,149,106,0.12);--accent-d:#8a6d4f;--border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);--r:6px;--r2:12px;--green:#4caf50;--red:#ef5350;--yellow:#ffc107;--blue:#64b5f6;--sans:'Segoe UI',-apple-system,sans-serif;--mono:'SF Mono','Fira Code',monospace}
 *{margin:0;padding:0;box-sizing:border-box}body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh}a{color:var(--accent);text-decoration:none}button{cursor:pointer;border:none;background:none;font-family:inherit;color:inherit}
@@ -879,57 +880,107 @@ async function batchDeleteOrphans(){
   renderOrphans();
 }
 
-/* ═══ EXIF 获取（只请求一次，结果存入 data） ═══ */
-function parseExifVal(raw){
-  if(!raw)return '';
-  // Handle fractions like "8/1" → 8, "700/10" → 70
-  if(typeof raw==='string'&&raw.includes('/')){
-    const[a,b]=raw.split('/').map(Number);
-    if(b&&b!==0)return a/b;
-  }
-  return raw;
+/* ═══ EXIF 获取（优先本地读，COS 接口备用） ═══ */
+
+/* 分数字符串转数字 "13/1" → 13, "1/200" → 0.005 */
+function frac2num(s){
+  if(typeof s!=='string'||!s.includes('/'))return parseFloat(s)||0;
+  const[a,b]=s.split('/').map(Number);
+  return b?a/b:0;
 }
 
+/* 格式化快门速度 */
+function fmtShutter(s){
+  if(s===null||s===undefined||s==='')return '';
+  let val;
+  if(typeof s==='string'&&s.includes('/')){
+    const[a,b]=s.split('/').map(Number);
+    if(b===0)return '';
+    if(a>=b)return(a/b)+'s';
+    return `${a}/${b}s`;
+  }
+  val=parseFloat(s);
+  if(isNaN(val))return '';
+  if(val>=1)return val+'s';
+  return `1/${Math.round(1/val)}s`;
+}
+
+/* 统一化 EXIF 数据（兼容 exifr 本地 & COS 远程两种源） */
+function normalizeExif(raw,source){
+  if(!raw)return false;
+  let make,model,fnum,shutter,iso,focal,datetime;
+
+  if(source==='local'){
+    // exifr output
+    make=raw.Make||'';model=raw.Model||'';
+    fnum=raw.FNumber;shutter=raw.ExposureTime;
+    iso=raw.ISO||raw.ISOSpeedRatings;focal=raw.FocalLength;
+    datetime=raw.DateTimeOriginal||raw.DateTime;
+    if(datetime instanceof Date){
+      const p=n=>String(n).padStart(2,'0');
+      datetime=`${datetime.getFullYear()}:${p(datetime.getMonth()+1)}:${p(datetime.getDate())} ${p(datetime.getHours())}:${p(datetime.getMinutes())}:${p(datetime.getSeconds())}`;
+    }
+  }else{
+    // COS {"FNumber":{"val":"13/1"},...}
+    const g=k=>raw[k]?.val||'';
+    make=g('Make');model=g('Model');
+    fnum=g('FNumber')?frac2num(g('FNumber')):0;
+    shutter=g('ExposureTime');
+    iso=g('ISOSpeedRatings')||g('ISO');
+    focal=g('FocalLength')?frac2num(g('FocalLength')):0;
+    datetime=g('DateTimeOriginal')||g('DateTime')||'';
+  }
+
+  return{
+    make:String(make||'').replace(/\s*CORPORATION\s*/i,'').trim(),
+    model:String(model||'').trim(),
+    aperture:fnum?`f/${Math.round(fnum*10)/10}`:'',
+    shutter:fmtShutter(shutter),
+    iso:iso?String(iso):'',
+    focal:focal?`${Math.round(focal)}mm`:'',
+    datetime:datetime||''
+  };
+}
+
+/* 从本地 File 对象读 EXIF（首选，上传前使用） */
+async function readExifFromFile(file){
+  if(typeof exifr==='undefined'){console.error('exifr not loaded');return false}
+  try{
+    const raw=await exifr.parse(file,{
+      pick:['Make','Model','FNumber','ExposureTime','ISO','ISOSpeedRatings','FocalLength','DateTimeOriginal','DateTime']
+    });
+    if(!raw)return false;
+    return normalizeExif(raw,'local');
+  }catch(e){console.error('exifr error:',e);return false}
+}
+
+/* 从 COS 读 EXIF（备用，已存在的文件） */
 async function fetchExif(fileKey){
   const url=CONFIG.cos_base+'/'+fileKey.replace(/^\//,'')+'?exif';
   try{
     const res=await fetch(url);
-    if(!res.ok)return false;
+    if(!res.ok){console.warn('EXIF http',res.status);return false}
     const d=await res.json();
-    if(!d||d.error_code)return false;
-
-    const get=k=>d[k]?.val||'';
-    const fnumber=parseExifVal(get('FNumber'));
-    const focal=parseExifVal(get('FocalLength'));
-    const datetime=get('DateTimeOriginal')||get('DateTime')||'';
-
-    return{
-      make:get('Make').replace(/\s*CORPORATION\s*/i,'').trim(),
-      model:get('Model').trim(),
-      aperture:fnumber?`f/${fnumber}`:'',
-      shutter:get('ExposureTime')?`${get('ExposureTime')}s`:'',
-      iso:get('ISOSpeedRatings'),
-      focal:focal?`${Math.round(focal)}mm`:'',
-      datetime:datetime
-    };
-  }catch(e){return false}
+    if(!d||d.error){console.log('No EXIF:',d?.error||'empty');return false}
+    return normalizeExif(d,'remote');
+  }catch(e){console.error('COS exif fetch failed:',e);return false}
 }
 
 /* 从 EXIF datetime 提取年月: "2024:06:15 14:30:00" → "2024-06" */
 function exifDateToYM(dt){
   if(!dt)return '';
-  const m=dt.match(/^(\d{4})[:\-](\d{2})/);
+  const m=String(dt).match(/^(\d{4})[:\-](\d{2})/);
   return m?`${m[1]}-${m[2]}`:'';
 }
 
-/* 为 data entry 补充 EXIF（如果还没有的话） */
+/* 为已上传 entry 补充 EXIF（如果还没有） - 用于未收录/已有照片 */
 async function enrichWithExif(entry){
-  if(entry.exif!==undefined)return; // 已有或已标记无数据
+  if(entry.exif!==undefined)return;
   const exif=await fetchExif(entry.file);
-  entry.exif=exif||false; // false = 已尝试过，无数据
+  entry.exif=exif||false;
   if(exif&&exif.datetime){
     const ym=exifDateToYM(exif.datetime);
-    if(ym&&!entry.date)entry.date=ym; // 仅在 date 为空时自动填充
+    if(ym&&!entry.date)entry.date=ym;
   }
 }
 
@@ -944,28 +995,36 @@ async function publish(){
 
   const pending=queue.filter(q=>q.status==='pending'),successEntries=[];
   for(const item of pending){
+    // STEP 1: Read EXIF from original file (before compression loses it)
+    let exif=false;
+    try{
+      exif=await readExifFromFile(item.file);
+      if(exif&&exif.model)log(`📷 ${item.file.name}: ${exif.model} ${exif.aperture} ${exif.shutter}`,'ok');
+      else log(`  ${item.file.name}: 无 EXIF 数据`,'info');
+    }catch(e){log(`EXIF 读取失败: ${e.message}`,'info')}
+
+    // STEP 2: Compress
     setQS(item.id,'compressing');log(`压缩: ${item.file.name}`,'info');
     let blob;try{blob=await compressImage(item.file,uploadMaxWidth,uploadQuality);item.compressedSize=blob.size;log(`${fmtSize(item.origSize)} → ${fmtSize(blob.size)}`,'ok')}
     catch(e){item.status='error';setQS(item.id,'error');log(`✗ 压缩失败`,'err');continue}
+
+    // STEP 3: Upload
     const cosPath=selectedFolder+Date.now()+'_'+item.title.replace(/[^a-zA-Z0-9\u4e00-\u9fff_-]/g,'')+'.jpg';
     setQS(item.id,'uploading');log(`上传: → ${cosPath}`,'info');
     try{
       await new Promise((res,rej)=>{COS_CLIENT.putObject({Bucket:CONFIG.admin.cos_bucket,Region:CONFIG.admin.cos_region,Key:cosPath,Body:blob},(e,d)=>e?rej(e):res(d))});
       item.status='done';setQS(item.id,'done');log('✓ 上传成功','ok');
-      const entry={file:'/'+cosPath,title:item.title,category:item.category,location:item.location,date:item.date,tags:item.tags?item.tags.split(/[,，]/).map(t=>t.trim()).filter(Boolean):[],notes:item.notes||''};
+
+      // STEP 4: Build entry with EXIF (already read locally, no extra COS request)
+      let dateVal=item.date;
+      if(!dateVal&&exif&&exif.datetime){const ym=exifDateToYM(exif.datetime);if(ym)dateVal=ym}
+      const entry={file:'/'+cosPath,title:item.title,category:item.category,location:item.location,date:dateVal||item.date,
+        tags:item.tags?item.tags.split(/[,，]/).map(t=>t.trim()).filter(Boolean):[],notes:item.notes||'',
+        exif:exif||false};
       if(item.wide)entry.wide=true;if(item.tall)entry.tall=true;
       successEntries.push(entry);
     }catch(e){item.status='error';setQS(item.id,'error');log(`✗ 上传失败: ${e.message}`,'err')}
     renderQueue();
-  }
-
-  // Fetch EXIF for newly uploaded photos
-  if(successEntries.length>0){
-    log('读取拍摄参数 (EXIF)...','info');
-    for(const entry of successEntries){
-      await enrichWithExif(entry);
-      if(entry.exif&&entry.exif.model)log(`  ${entry.title}: ${entry.exif.model} ${entry.exif.aperture} ${entry.exif.shutter}`,'ok');
-    }
   }
 
   successEntries.forEach(e=>DATA.photos.unshift(e));
