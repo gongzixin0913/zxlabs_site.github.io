@@ -199,6 +199,7 @@
       <div class="card">
         <h2>② 上传画质</h2>
         <div class="quality-bar">
+          <button class="q-opt" data-w="0" data-q="100" onclick="setQuality(this)">原图<small>不压缩</small></button>
           <button class="q-opt" data-w="2400" data-q="90" onclick="setQuality(this)">超高<small>2400px/90%</small></button>
           <button class="q-opt active" data-w="1600" data-q="85" onclick="setQuality(this)">高质量<small>1600px/85%</small></button>
           <button class="q-opt" data-w="1200" data-q="75" onclick="setQuality(this)">标准<small>1200px/75%</small></button>
@@ -398,7 +399,7 @@ function switchTab(name,btn){
 }
 
 /* ═══ QUALITY ═══ */
-function setQuality(btn){document.querySelectorAll('.q-opt').forEach(b=>b.classList.remove('active'));btn.classList.add('active');uploadMaxWidth=parseInt(btn.dataset.w);uploadQuality=parseInt(btn.dataset.q)/100;log(`画质: ${btn.dataset.w}px / ${btn.dataset.q}%`,'info')}
+function setQuality(btn){document.querySelectorAll('.q-opt').forEach(b=>b.classList.remove('active'));btn.classList.add('active');uploadMaxWidth=parseInt(btn.dataset.w);uploadQuality=parseInt(btn.dataset.q)/100;log(uploadMaxWidth?`画质: ${btn.dataset.w}px / ${btn.dataset.q}%`:`画质: 原图（不压缩）`,'info')}
 
 /* ═══ COMPRESSION ═══ */
 function compressImage(file,maxW,quality){
@@ -462,8 +463,16 @@ function getCat(p){const parts=p.file.replace(/^\//,'').split('/');return parts.
 function getFolder(p){const parts=p.file.replace(/^\//,'').split('/');return parts.length>1?parts.slice(0,-1).join('/')+'/':''}
 
 /* Collect global tag pool from all photos */
-function getAllTags(){const s=new Set();DATA.photos.forEach(p=>(p.tags||[]).forEach(t=>s.add(t)));return[...s].sort()}
-function getAllLocs(){const s=new Set();DATA.photos.forEach(p=>{if(p.location)s.add(p.location)});return[...s].sort()}
+/* Cached global tag/location pools - snapshot once, refresh only on list re-render */
+let cachedTagPool=null, cachedLocPool=null;
+function refreshTagPools(){
+  const tags=new Set(),locs=new Set();
+  DATA.photos.forEach(p=>{(p.tags||[]).forEach(t=>tags.add(t));if(p.location)locs.add(p.location)});
+  cachedTagPool=[...tags].sort();
+  cachedLocPool=[...locs].sort();
+}
+function getAllTags(){if(cachedTagPool===null)refreshTagPools();return cachedTagPool}
+function getAllLocs(){if(cachedLocPool===null)refreshTagPools();return cachedLocPool}
 
 let filteredIdx=[];
 
@@ -477,6 +486,7 @@ function populateFilters(){
 function clearFilters(){['filterCat','filterTag','filterLoc'].forEach(id=>document.getElementById(id).value='');document.getElementById('editSort').value='newest';renderManageList()}
 
 function renderManageList(){
+  refreshTagPools(); // rebuild snapshot
   populateFilters();
   selectedIndices.clear();updateSelCount();
   document.getElementById('editSelectAll').checked=false;
@@ -546,21 +556,21 @@ function renderDetail(i){
     if(parts.length)exifHtml=`<div style="font-size:.78rem;color:var(--dim);margin:.5rem 0;padding:.4rem .6rem;background:var(--bg3);border-radius:var(--r)">📷 ${parts.join(' · ')}</div>`;
   }
 
-  // Tag chips
+  // Tag chips — keep stable alphabetical order from snapshot, visual state only
   const photoTags=p.tags||[];
   const allTags=getAllTags();
-  const myTags=photoTags.filter(t=>allTags.includes(t));
-  const otherTags=allTags.filter(t=>!photoTags.includes(t));
-
-  const tagChips=[...myTags.map(t=>`<span class="chip active" onclick="togglePhotoTag(${i},'${esc(t)}')">${t}</span>`),
-                  ...otherTags.map(t=>`<span class="chip" onclick="togglePhotoTag(${i},'${esc(t)}')">${t}</span>`)].join('');
-  // Tags unique to this photo (not in global pool) - add them to "my" section anyway
+  const photoTagSet=new Set(photoTags);
+  const tagChips=allTags.map(t=>`<span class="chip${photoTagSet.has(t)?' active':''}" onclick="togglePhotoTag(${i},'${esc(t)}')">${t}</span>`).join('');
+  // Tags unique to this photo (not yet in global snapshot) — show at the end
   const uniqueTags=photoTags.filter(t=>!allTags.includes(t));
   const uniqueChips=uniqueTags.map(t=>`<span class="chip active" onclick="togglePhotoTag(${i},'${esc(t)}')">${t}</span>`).join('');
 
-  // Location chips (single-select)
+  // Location chips (single-select) — stable alphabetical order
   const allLocs=getAllLocs();
+  const locSet=new Set(allLocs);
   const locChips=allLocs.map(l=>`<span class="chip${l===p.location?' single-active':''}" onclick="togglePhotoLoc(${i},'${esc(l)}')">${l}</span>`).join('');
+  // Unique location
+  const uniqueLocChip=p.location&&!locSet.has(p.location)?`<span class="chip single-active" onclick="togglePhotoLoc(${i},'${esc(p.location)}')">${p.location}</span>`:'';
 
   const exifDt=p.exif&&p.exif.datetime?p.exif.datetime:'';
 
@@ -572,9 +582,9 @@ function renderDetail(i){
 
     <div class="row"><div class="field"><label>标题</label><input value="${esc(p.title)}" onchange="dUpd(${i},'title',this.value)"></div><div class="field"><label>时间 (年-月)</label><input value="${esc(p.date)}" onchange="dUpd(${i},'date',this.value)"></div></div>
 
-    <div class="field"><label>地点（单选，再点击取消）</label><div class="chip-picker">${locChips}<span class="chip chip-add" onclick="addNewLoc(${i})">+ 新建地点</span></div></div>
+    <div class="field"><label>地点（单选，再点击取消）</label><div class="chip-picker">${locChips}${uniqueLocChip}<span class="chip chip-add" onclick="addNewLoc(${i})">+ 新建地点</span></div></div>
 
-    <div class="field" style="margin-top:.5rem"><label>标签（点击切换选中）</label><div class="chip-picker">${uniqueChips}${tagChips}<span class="chip chip-add" onclick="addNewTag(${i})">+ 新建标签</span></div></div>
+    <div class="field" style="margin-top:.5rem"><label>标签（点击切换选中）</label><div class="chip-picker">${tagChips}${uniqueChips}<span class="chip chip-add" onclick="addNewTag(${i})">+ 新建标签</span></div></div>
 
     <div class="row" style="margin-top:.5rem"><div class="field"><label>拍摄手记</label><textarea rows="1" onchange="dUpd(${i},'notes',this.value)">${esc(p.notes||'')}</textarea></div></div>
 
@@ -594,9 +604,9 @@ function renderDetail(i){
 
 function getFolderOptions(){if(!foldersList.length)return'<option value="photo/">photo/</option>';return foldersList.map(f=>`<option value="${f}">${f}</option>`).join('')}
 
-function dUpd(i,k,v){DATA.photos[i][k]=v;DATA._dirty=true;renderManageList()}
+function dUpd(i,k,v){DATA.photos[i][k]=v;DATA._dirty=true;updateListRowMeta(i)}
 
-function dUpdExifDt(i,v){if(!DATA.photos[i].exif||DATA.photos[i].exif===false)DATA.photos[i].exif={};DATA.photos[i].exif.datetime=v;const ym=exifDateToYM(v);if(ym)DATA.photos[i].date=ym;DATA._dirty=true;renderManageList()}
+function dUpdExifDt(i,v){if(!DATA.photos[i].exif||DATA.photos[i].exif===false)DATA.photos[i].exif={};DATA.photos[i].exif.datetime=v;const ym=exifDateToYM(v);if(ym)DATA.photos[i].date=ym;DATA._dirty=true;updateListRowMeta(i)}
 
 async function fetchExifForPhoto(i){
   editLog(`获取 EXIF: ${DATA.photos[i].title}...`,'info');
@@ -608,17 +618,33 @@ async function fetchExifForPhoto(i){
 }
 
 /* Tag / Location chip interactions */
+/* Update just the meta text of one list row, no pool refresh */
+function updateListRowMeta(i){
+  const row=document.querySelector(`.mgr-row [data-idx="${i}"]`)?.closest('.mgr-row');
+  if(!row)return;
+  const p=DATA.photos[i];
+  const cat=getCat(p);
+  const metaEl=row.querySelector('.m-meta');
+  if(metaEl)metaEl.textContent=`${cat} · ${p.location||'-'} · ${p.date||'-'}${(p.tags||[]).length?' · '+p.tags.join('/'):''}`;
+  const titleEl=row.querySelector('.m-title');
+  if(titleEl)titleEl.textContent=p.title;
+}
+
 function togglePhotoTag(i,tag){
   const p=DATA.photos[i];
   if(!p.tags)p.tags=[];
   const idx=p.tags.indexOf(tag);
   if(idx>=0)p.tags.splice(idx,1);else p.tags.push(tag);
-  DATA._dirty=true;renderDetail(i);renderManageList();
+  DATA._dirty=true;
+  renderDetail(i);
+  updateListRowMeta(i);
 }
 function togglePhotoLoc(i,loc){
   const p=DATA.photos[i];
   if(p.location===loc)p.location='';else p.location=loc;
-  DATA._dirty=true;renderDetail(i);renderManageList();
+  DATA._dirty=true;
+  renderDetail(i);
+  updateListRowMeta(i);
 }
 function addNewTag(i){
   const v=prompt('输入新标签：');
@@ -626,13 +652,17 @@ function addNewTag(i){
   const tag=v.trim();
   if(!DATA.photos[i].tags)DATA.photos[i].tags=[];
   if(!DATA.photos[i].tags.includes(tag))DATA.photos[i].tags.push(tag);
-  DATA._dirty=true;renderDetail(i);renderManageList();
+  DATA._dirty=true;
+  renderDetail(i);
+  updateListRowMeta(i);
 }
 function addNewLoc(i){
   const v=prompt('输入新地点：');
   if(!v||!v.trim())return;
   DATA.photos[i].location=v.trim();
-  DATA._dirty=true;renderDetail(i);renderManageList();
+  DATA._dirty=true;
+  renderDetail(i);
+  updateListRowMeta(i);
 }
 
 /* Selection */
@@ -1034,11 +1064,21 @@ async function publish(){
     try{exif=await readExifFromFile(item.file);if(exif&&exif.model)log(`📷 ${item.file.name}: ${exif.model} ${exif.aperture} ${exif.shutter}`,'ok');else log(`  ${item.file.name}: 无 EXIF`,'info')}
     catch(e){log(`EXIF 读取: ${e.message}`,'info')}
 
-    setQS(item.id,'compressing');log(`压缩: ${item.file.name}`,'info');
-    let blob;try{blob=await compressImage(item.file,uploadMaxWidth,uploadQuality);item.compressedSize=blob.size;log(`${fmtSize(item.origSize)} → ${fmtSize(blob.size)}`,'ok')}
-    catch(e){item.status='error';setQS(item.id,'error');log(`✗ 压缩失败`,'err');continue}
+    let blob;
+    const useOriginal=uploadMaxWidth===0;
+    if(useOriginal){
+      setQS(item.id,'uploading');log(`原图上传: ${item.file.name}`,'info');
+      blob=item.file;
+      item.compressedSize=item.file.size;
+    }else{
+      setQS(item.id,'compressing');log(`压缩: ${item.file.name}`,'info');
+      try{blob=await compressImage(item.file,uploadMaxWidth,uploadQuality);item.compressedSize=blob.size;log(`${fmtSize(item.origSize)} → ${fmtSize(blob.size)}`,'ok')}
+      catch(e){item.status='error';setQS(item.id,'error');log(`✗ 压缩失败`,'err');continue}
+    }
 
-    const cosPath=selectedFolder+Date.now()+'_'+item.title.replace(/[^a-zA-Z0-9\u4e00-\u9fff_-]/g,'')+'.jpg';
+    // Preserve original extension when uploading raw
+    const origExt=useOriginal?(item.file.name.match(/\.[^.]+$/)?.[0]||'.jpg'):'.jpg';
+    const cosPath=selectedFolder+Date.now()+'_'+item.title.replace(/[^a-zA-Z0-9\u4e00-\u9fff_-]/g,'')+origExt;
     setQS(item.id,'uploading');log(`上传: → ${cosPath}`,'info');
     try{
       await new Promise((res,rej)=>{COS_CLIENT.putObject({Bucket:CONFIG.admin.cos_bucket,Region:CONFIG.admin.cos_region,Key:cosPath,Body:blob},(e,d)=>e?rej(e):res(d))});
