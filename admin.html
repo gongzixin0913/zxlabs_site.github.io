@@ -217,17 +217,25 @@
 
         <!-- Filters -->
         <div class="row" style="margin:.6rem 0;align-items:flex-end">
-          <div class="field" style="min-width:100px;flex:.6">
-            <label>分类筛选</label>
-            <select id="filterCat" onchange="renderEditList()"><option value="">全部分类</option></select>
+          <div class="field" style="min-width:90px;flex:.5">
+            <label>分类/文件夹</label>
+            <select id="filterCat" onchange="renderEditList()"><option value="">全部</option></select>
           </div>
-          <div class="field" style="min-width:100px;flex:.6">
-            <label>标签筛选</label>
-            <select id="filterTag" onchange="renderEditList()"><option value="">全部标签</option></select>
+          <div class="field" style="min-width:90px;flex:.5">
+            <label>标签</label>
+            <select id="filterTag" onchange="renderEditList()"><option value="">全部</option></select>
           </div>
-          <div class="field" style="min-width:120px;flex:.8">
-            <label>文件夹筛选</label>
-            <select id="filterFolder" onchange="renderEditList()"><option value="">全部文件夹</option></select>
+          <div class="field" style="min-width:90px;flex:.5">
+            <label>地点</label>
+            <select id="filterLoc" onchange="renderEditList()"><option value="">全部</option></select>
+          </div>
+          <div class="field" style="min-width:90px;flex:.5">
+            <label>文件夹路径</label>
+            <select id="filterFolder" onchange="renderEditList()"><option value="">全部</option></select>
+          </div>
+          <div class="field" style="min-width:80px;flex:.4">
+            <label>排序</label>
+            <select id="editSort" onchange="renderEditList()"><option value="newest">最新优先</option><option value="oldest">最早优先</option></select>
           </div>
           <div style="flex-shrink:0"><button class="btn btn-sm" onclick="clearFilters()">清除</button></div>
         </div>
@@ -382,33 +390,32 @@ function setQS(id,status){const el=document.getElementById('qs-'+id);if(el){el.c
    ═══════════════════════════════════════ */
 let filteredEditIndices=[];
 
+/* Category from folder path: /photo/风光/xxx.jpg → 风光 */
+function getCat(p){const parts=p.file.replace(/^\//,'').split('/');return parts.length>=2?parts[parts.length-2]:'未分类'}
+function getFolder(p){const parts=p.file.replace(/^\//,'').split('/');return parts.length>1?parts.slice(0,-1).join('/')+'/':''}
+
 function populateFilters(){
-  // Collect unique values from DATA, no COS requests
-  const cats=new Set(),tags=new Set(),folders=new Set();
+  const cats=new Set(),tags=new Set(),locs=new Set(),folders=new Set();
   DATA.photos.forEach(p=>{
-    if(p.category)cats.add(p.category);
+    cats.add(getCat(p));
     (p.tags||[]).forEach(t=>tags.add(t));
-    const parts=p.file.replace(/^\//,'').split('/');
-    if(parts.length>1)folders.add(parts.slice(0,-1).join('/')+'/');
+    if(p.location)locs.add(p.location);
+    const f=getFolder(p);if(f)folders.add(f);
   });
 
-  const catSel=document.getElementById('filterCat');
-  const curCat=catSel.value;
-  catSel.innerHTML='<option value="">全部分类</option>'+[...cats].sort().map(c=>`<option value="${c}"${c===curCat?' selected':''}>${c}</option>`).join('');
-
-  const tagSel=document.getElementById('filterTag');
-  const curTag=tagSel.value;
-  tagSel.innerHTML='<option value="">全部标签</option>'+[...tags].sort().map(t=>`<option value="${t}"${t===curTag?' selected':''}>${t}</option>`).join('');
-
-  const folderSel=document.getElementById('filterFolder');
-  const curFolder=folderSel.value;
-  folderSel.innerHTML='<option value="">全部文件夹</option>'+[...folders].sort().map(f=>`<option value="${f}"${f===curFolder?' selected':''}>${f}</option>`).join('');
+  const populate=(id,items,label)=>{
+    const sel=document.getElementById(id),cur=sel.value;
+    sel.innerHTML=`<option value="">全部</option>`+[...items].sort().map(v=>`<option value="${v}"${v===cur?' selected':''}>${v}</option>`).join('');
+  };
+  populate('filterCat',[...cats],'');
+  populate('filterTag',[...tags],'');
+  populate('filterLoc',[...locs],'');
+  populate('filterFolder',[...folders],'');
 }
 
 function clearFilters(){
-  document.getElementById('filterCat').value='';
-  document.getElementById('filterTag').value='';
-  document.getElementById('filterFolder').value='';
+  ['filterCat','filterTag','filterLoc','filterFolder'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('editSort').value='newest';
   renderEditList();
 }
 
@@ -419,32 +426,40 @@ function renderEditList(){
   document.getElementById('editSelectAll').checked=false;
   document.getElementById('editCount').textContent=`(${DATA.photos.length})`;
 
-  // Apply filters
   const fCat=document.getElementById('filterCat').value;
   const fTag=document.getElementById('filterTag').value;
+  const fLoc=document.getElementById('filterLoc').value;
   const fFolder=document.getElementById('filterFolder').value;
+  const sortDir=document.getElementById('editSort').value;
 
   filteredEditIndices=[];
   DATA.photos.forEach((p,i)=>{
-    if(fCat&&p.category!==fCat)return;
+    if(fCat&&getCat(p)!==fCat)return;
     if(fTag&&!(p.tags||[]).includes(fTag))return;
-    if(fFolder){const pFolder=p.file.replace(/^\//,'').split('/').slice(0,-1).join('/')+'/';if(pFolder!==fFolder)return}
+    if(fLoc&&p.location!==fLoc)return;
+    if(fFolder&&getFolder(p)!==fFolder)return;
     filteredEditIndices.push(i);
   });
 
+  // Sort by date field
+  filteredEditIndices.sort((a,b)=>{
+    const da=DATA.photos[a].date||'',db=DATA.photos[b].date||'';
+    return sortDir==='newest'?db.localeCompare(da):da.localeCompare(db);
+  });
+
   const info=document.getElementById('filterInfo');
-  if(fCat||fTag||fFolder){
-    info.textContent=`筛选结果: ${filteredEditIndices.length} / ${DATA.photos.length} 张`;
-  }else{info.textContent=''}
+  const hasFilter=fCat||fTag||fLoc||fFolder;
+  info.textContent=hasFilter?`筛选结果: ${filteredEditIndices.length} / ${DATA.photos.length} 张`:'';
 
   el.innerHTML=filteredEditIndices.map(i=>{
     const p=DATA.photos[i];
+    const cat=getCat(p);
     const tagsStr=(p.tags||[]).join(', ');
     return`<div class="edit-item" id="ei-${i}">
       <div class="edit-item-header" onclick="toggleExpand(${i})">
         <div class="ei-check" onclick="event.stopPropagation()"><input type="checkbox" data-idx="${i}" onchange="toggleSelect(${i},this.checked)"></div>
         <img class="ei-thumb" src="${CONFIG.cos_base}${p.file}?imageMogr2/thumbnail/160x" onerror="this.style.opacity='.2'">
-        <div class="ei-info"><div class="t">${p.title}</div><div class="m">${p.category} · ${p.location} · ${p.date}${tagsStr?' · '+tagsStr:''}</div><div class="m-path">${p.file}</div></div>
+        <div class="ei-info"><div class="t">${p.title}</div><div class="m">${cat} · ${p.location} · ${p.date}${tagsStr?' · '+tagsStr:''}</div><div class="m-path">${p.file}</div></div>
         <div class="ei-actions" onclick="event.stopPropagation()">
           <button class="btn btn-sm btn-danger" onclick="delPhoto(${i})">删除</button>
         </div>
@@ -632,9 +647,10 @@ async function scanOrphans(){
   try{
     const allFiles=await listAllFiles('');
     const imageExts=['.jpg','.jpeg','.png','.gif','.webp','.bmp'];
+    const ignoreFiles=new Set(['photo/ZX_self.JPG']); // 忽略的文件
     const imageFiles=allFiles.filter(f=>{
       const lower=f.Key.toLowerCase();
-      return imageExts.some(ext=>lower.endsWith(ext));
+      return imageExts.some(ext=>lower.endsWith(ext)) && !ignoreFiles.has(f.Key);
     });
 
     // Compare with data.json
