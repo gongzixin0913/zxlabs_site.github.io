@@ -16,15 +16,16 @@
 .btn-p{background:var(--accent);color:#000;border-color:var(--accent);font-weight:600}.btn-p:hover{background:var(--accent-d)}.btn-p:disabled{opacity:.5;cursor:not-allowed}
 .btn-danger{border-color:var(--red);color:var(--red)}.btn-danger:hover{background:rgba(239,83,80,.1)}
 .btn-sm{padding:.25rem .7rem;font-size:.75rem}
-.wrap{max-width:900px;margin:0 auto;padding:1.5rem}
+.wrap{max-width:1100px;margin:0 auto;padding:1.5rem}
 .card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:1.5rem;margin-bottom:1.2rem}
 .card h2{font-size:.95rem;color:var(--accent);margin-bottom:.8rem;font-weight:500}
+.card h3{font-size:.85rem;color:var(--text);margin:1rem 0 .5rem;font-weight:500}
 .card .hint{font-size:.78rem;color:var(--muted);margin-bottom:.8rem}
 .row{display:flex;gap:.8rem;margin-bottom:.6rem;flex-wrap:wrap}
 .field{flex:1;min-width:120px}.field label{display:block;font-size:.7rem;color:var(--muted);margin-bottom:.25rem;letter-spacing:.04em;text-transform:uppercase}
 .field input,.field select,.field textarea{width:100%;padding:.5rem .7rem;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:var(--r);font-family:inherit;font-size:.85rem;transition:border-color .2s}
 .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--accent)}
-.field textarea{resize:vertical;min-height:60px;line-height:1.5}
+.field textarea{resize:vertical;min-height:32px;line-height:1.5}
 .check{display:flex;align-items:center;gap:.4rem;font-size:.82rem;color:var(--dim);cursor:pointer;white-space:nowrap}.check input{width:auto;margin:0}
 .hidden{display:none!important}
 
@@ -34,16 +35,15 @@
 .auth-box .err{font-size:.8rem;color:var(--red);margin-top:.5rem;min-height:1.2em}
 .auth-box button{margin-top:.8rem;padding:.6rem 2rem;background:var(--accent);color:#000;font-weight:600;border-radius:var(--r);font-size:.9rem}
 
-/* Collapsible */
 .collapsible-header{display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none}
 .collapsible-header .toggle-icon{font-size:.8rem;color:var(--muted);transition:transform .2s}
 .collapsible-header .toggle-icon.collapsed{transform:rotate(-90deg)}
-.collapsible-body{overflow:hidden;transition:max-height .3s ease,opacity .3s;max-height:500px;opacity:1}
+.collapsible-body{overflow:hidden;transition:max-height .3s ease,opacity .3s;max-height:9999px;opacity:1}
 .collapsible-body.collapsed{max-height:0;opacity:0;margin:0;padding:0}
 .cred-status{font-size:.72rem;color:var(--green);margin-left:.5rem}
 
 /* Tabs */
-.tab-bar{display:flex;border-bottom:1px solid var(--border);margin-bottom:1.5rem}
+.tab-bar{display:flex;border-bottom:1px solid var(--border);margin-bottom:1.5rem;flex-wrap:wrap}
 .tab-btn{padding:.7rem 1.5rem;font-size:.88rem;color:var(--muted);border-bottom:2px solid transparent;transition:all .2s;letter-spacing:.03em}
 .tab-btn:hover{color:var(--text)}
 .tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
@@ -63,7 +63,7 @@
 .upload-zone:hover,.upload-zone.over{border-color:var(--accent);background:var(--accent-s)}
 .upload-zone .icon{font-size:2.2rem;margin-bottom:.3rem;opacity:.4}.upload-zone p{color:var(--muted);font-size:.88rem}.upload-zone small{color:var(--muted);font-size:.72rem;opacity:.7}
 
-/* Queue - larger preview */
+/* Queue */
 .queue-item{background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:1rem;margin-bottom:.8rem;display:grid;grid-template-columns:160px 1fr 30px;gap:1rem;align-items:start}
 .queue-item .q-thumb{width:160px;height:110px;object-fit:cover;border-radius:4px;background:var(--bg3)}
 .queue-item .fields{display:flex;flex-direction:column;gap:.4rem}.queue-item .fields .row{margin-bottom:0}
@@ -71,36 +71,48 @@
 .q-status{font-size:.72rem;margin-top:.2rem;font-family:var(--mono)}
 .q-status.pending{color:var(--muted)}.q-status.compressing{color:var(--blue)}.q-status.uploading{color:var(--yellow)}.q-status.done{color:var(--green)}.q-status.error{color:var(--red)}
 
-/* Log */
 .log{background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:.8rem;font-family:var(--mono);font-size:.78rem;max-height:220px;overflow-y:auto}
 .log .ok{color:var(--green)}.log .err{color:var(--red)}.log .info{color:var(--dim)}.log div{padding:.12rem 0;border-bottom:1px solid rgba(255,255,255,.02)}
 
-/* ═══ EDIT PAGE ═══ */
-.edit-toolbar{display:flex;gap:.5rem;align-items:center;margin-bottom:1rem;flex-wrap:wrap;padding:.6rem .8rem;background:var(--bg);border:1px solid var(--border);border-radius:var(--r)}
-.edit-toolbar .sel-count{font-size:.82rem;color:var(--accent);margin-right:auto}
+/* Tag chip picker */
+.chip-picker{display:flex;flex-wrap:wrap;gap:.35rem;padding:.4rem;background:var(--bg);border:1px solid var(--border);border-radius:var(--r);min-height:2rem}
+.chip{padding:.25rem .7rem;font-size:.75rem;border:1px solid var(--border);border-radius:1rem;color:var(--muted);cursor:pointer;transition:all .15s;user-select:none;display:inline-flex;align-items:center;gap:.3rem}
+.chip:hover{border-color:var(--border2);color:var(--text)}
+.chip.active{background:var(--accent);color:#000;border-color:var(--accent);font-weight:500}
+.chip.single-active{background:var(--green);color:#000;border-color:var(--green);font-weight:500}
+.chip-add{color:var(--accent);border-style:dashed;border-color:var(--accent-d)}
+.chip-add:hover{background:var(--accent-s)}
+.chip-input{display:inline-flex;align-items:center;gap:.2rem}
+.chip-input input{padding:.2rem .5rem;font-size:.75rem;background:var(--bg3);border:1px solid var(--accent);color:var(--text);border-radius:1rem;width:100px;outline:none}
 
-.edit-item{background:var(--bg);border:1px solid var(--border);border-radius:var(--r);margin-bottom:.8rem;overflow:hidden}
-.edit-item-header{display:flex;align-items:center;gap:.8rem;padding:.8rem 1rem;cursor:pointer;transition:background .15s}
-.edit-item-header:hover{background:rgba(255,255,255,.02)}
-.edit-item-header .ei-check{flex-shrink:0}
-.edit-item-header .ei-check input{width:16px;height:16px;accent-color:var(--accent)}
-.edit-item-header .ei-thumb{width:80px;height:55px;object-fit:cover;border-radius:4px;background:var(--bg3);flex-shrink:0}
-.edit-item-header .ei-info{flex:1;min-width:0}
-.edit-item-header .ei-info .t{font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.edit-item-header .ei-info .m{font-size:.72rem;color:var(--muted)}
-.edit-item-header .ei-info .m-path{font-size:.68rem;color:var(--muted);font-family:var(--mono);opacity:.7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.edit-item-header .ei-actions{display:flex;gap:.3rem;flex-shrink:0}
-.edit-item-header .ei-expand{font-size:.8rem;color:var(--muted);transition:transform .2s}
+/* ═══ MANAGE: MASTER-DETAIL LAYOUT ═══ */
+.mgr-layout{display:grid;grid-template-columns:320px 1fr;gap:1rem;min-height:500px}
+.mgr-list{background:var(--bg);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column;max-height:700px}
+.mgr-list-header{padding:.6rem .8rem;border-bottom:1px solid var(--border);font-size:.78rem;color:var(--muted);display:flex;justify-content:space-between;align-items:center}
+.mgr-list-inner{flex:1;overflow-y:auto;padding:.3rem}
 
-/* Expanded edit panel - larger preview */
-.edit-panel{display:none;padding:1rem;border-top:1px solid var(--border);background:var(--bg2)}
-.edit-panel.open{display:block}
-.edit-panel-inner{display:grid;grid-template-columns:220px 1fr;gap:1.2rem}
-.edit-panel .ep-preview{width:220px;border-radius:var(--r);overflow:hidden;background:var(--bg3)}
-.edit-panel .ep-preview img{width:100%;display:block}
-.edit-panel .ep-fields{display:flex;flex-direction:column;gap:.5rem}
-.edit-panel .ep-fields .row{margin-bottom:0}
-.edit-panel .ep-move{margin-top:.6rem;padding-top:.6rem;border-top:1px solid var(--border)}
+.mgr-row{display:grid;grid-template-columns:24px 52px 1fr;gap:.5rem;padding:.35rem .4rem;align-items:center;cursor:pointer;border-radius:4px;transition:background .12s;border:1px solid transparent}
+.mgr-row:hover{background:rgba(255,255,255,.03)}
+.mgr-row.active{background:var(--accent-s);border-color:var(--accent-d)}
+.mgr-row .m-check input{width:14px;height:14px;accent-color:var(--accent)}
+.mgr-row .m-thumb{width:52px;height:36px;object-fit:cover;border-radius:3px;background:var(--bg3)}
+.mgr-row .m-info{min-width:0}
+.mgr-row .m-title{font-size:.78rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mgr-row .m-meta{font-size:.68rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.mgr-detail{background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:1rem;overflow-y:auto;max-height:700px}
+.mgr-detail.empty{display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:.88rem}
+.mgr-detail .mdet-preview{width:100%;max-height:280px;object-fit:contain;background:var(--bg3);border-radius:var(--r);margin-bottom:.8rem}
+.mgr-detail h3.mdet-title{font-size:1rem;margin-bottom:.3rem}
+.mdet-path{font-size:.7rem;color:var(--muted);font-family:var(--mono);margin-bottom:.8rem;word-break:break-all}
+
+.mgr-toolbar{background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:.5rem .7rem;margin-bottom:.8rem;display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}
+.mgr-toolbar .sel-count{font-size:.78rem;color:var(--accent);margin-right:auto}
+
+/* Watermark preview */
+.wm-preview-box{border:1px solid var(--border);border-radius:var(--r);overflow:hidden;background:var(--bg3);position:relative;min-height:180px;display:flex;align-items:center;justify-content:center}
+.wm-preview-box img{max-width:100%;max-height:300px;display:block}
+.wm-preview-box .wm-empty{color:var(--muted);font-size:.82rem;padding:2rem}
 
 /* Orphan scanner */
 .orphan-item{background:var(--bg);border:1px solid var(--border);border-radius:var(--r);margin-bottom:.6rem;overflow:hidden}
@@ -110,19 +122,25 @@
 .orphan-header .o-path{flex:1;font-family:var(--mono);font-size:.78rem;color:var(--dim);word-break:break-all}
 .orphan-header .o-size{font-size:.72rem;color:var(--muted);flex-shrink:0;margin:0 .5rem}
 .orphan-header .o-actions{display:flex;gap:.3rem;flex-shrink:0}
-.orphan-edit{display:none;padding:1rem;border-top:1px solid var(--border);background:var(--bg2)}
-.orphan-edit.open{display:block}
+.orphan-edit{display:none;padding:1rem;border-top:1px solid var(--border);background:var(--bg2)}.orphan-edit.open{display:block}
 .orphan-edit-inner{display:grid;grid-template-columns:180px 1fr;gap:1rem}
 .orphan-edit .oe-preview{width:180px;border-radius:var(--r);overflow:hidden;background:var(--bg3)}
 .orphan-edit .oe-preview img{width:100%;display:block}
-.scan-stats{font-size:.82rem;color:var(--dim);margin-bottom:.8rem}
-.scan-stats strong{color:var(--accent)}
+.scan-stats{font-size:.82rem;color:var(--dim);margin-bottom:.8rem}.scan-stats strong{color:var(--accent)}
 
+/* Progress bar for init dates */
+.progress{background:var(--bg);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;height:20px;margin:.5rem 0;position:relative}
+.progress-bar{height:100%;background:var(--accent);transition:width .3s;width:0}
+.progress-label{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:.72rem;color:#000;font-weight:500}
+
+@media(max-width:900px){
+  .mgr-layout{grid-template-columns:1fr}
+  .mgr-list,.mgr-detail{max-height:none}
+}
 @media(max-width:640px){
   .wrap{padding:1rem}
   .queue-item{grid-template-columns:100px 1fr 24px}.queue-item .q-thumb{width:100px;height:70px}
   .row{flex-direction:column;gap:.4rem}.field{min-width:100%}
-  .edit-panel-inner{grid-template-columns:1fr}.edit-panel .ep-preview{width:100%;max-height:200px}
   .orphan-edit-inner{grid-template-columns:1fr}.orphan-edit .oe-preview{width:100%;max-height:160px}
   .tab-btn{padding:.6rem 1rem;font-size:.82rem}
 }
@@ -130,7 +148,6 @@
 </head>
 <body>
 
-<!-- ═══ AUTH ═══ -->
 <div id="authScreen" class="auth-box card">
   <h2>📷 作者后台</h2><p>请输入管理密码</p>
   <div class="field"><input type="password" id="pwdInput" placeholder="••••••••" onkeydown="if(event.key==='Enter')login()"></div>
@@ -138,7 +155,6 @@
   <div style="margin-top:1rem"><a href="./index.html" style="font-size:.82rem;color:var(--muted)">← 返回网站</a></div>
 </div>
 
-<!-- ═══ MAIN ═══ -->
 <div id="adminMain" class="hidden">
   <div class="top-bar">
     <h1>📷 <span>作者后台</span></h1>
@@ -149,7 +165,7 @@
   </div>
   <div class="wrap">
 
-    <!-- Collapsible Credentials -->
+    <!-- Credentials (collapsible) -->
     <div class="card" id="credCard">
       <div class="collapsible-header" onclick="toggleCred()">
         <h2 style="margin-bottom:0">🔑 凭证设置 <span class="cred-status" id="credStatus"></span></h2>
@@ -160,13 +176,15 @@
         <div class="row"><div class="field"><label>GitHub Token</label><input type="password" id="ghToken" placeholder="ghp_..."></div></div>
         <div class="row"><div class="field"><label>腾讯云 SecretId</label><input type="password" id="cosId" placeholder="AKID..."></div><div class="field"><label>腾讯云 SecretKey</label><input type="password" id="cosKey" placeholder=""></div></div>
         <button class="btn" style="margin-top:.5rem" onclick="saveCred()">保存凭证</button>
+        <span id="credOk" class="hidden" style="font-size:.75rem;color:var(--green);margin-left:.5rem">✓ 已保存</span>
       </div>
     </div>
 
-    <!-- Tab Navigation -->
+    <!-- Tabs -->
     <div class="tab-bar">
       <button class="tab-btn active" onclick="switchTab('upload',this)">📤 上传照片</button>
-      <button class="tab-btn" onclick="switchTab('edit',this)">✏️ 管理照片 <span id="editCount" style="font-size:.72rem;color:var(--muted)"></span></button>
+      <button class="tab-btn" onclick="switchTab('manage',this)">✏️ 管理照片 <span id="editCount" style="font-size:.72rem;color:var(--muted)"></span></button>
+      <button class="tab-btn" onclick="switchTab('settings',this)">⚙️ 全局设置</button>
     </div>
 
     <!-- ═══ TAB: UPLOAD ═══ -->
@@ -174,8 +192,8 @@
       <div class="card">
         <h2>① 选择 COS 目标文件夹</h2>
         <div class="folder-tree" id="folderTree">点击「加载」获取文件夹列表</div>
-        <div class="row"><div class="field"><label>新建文件夹</label><input type="text" id="newFolder" placeholder="如：photos/travel/japan2025"></div><div style="display:flex;align-items:flex-end;gap:.4rem"><button class="btn" onclick="createFolder()">创建</button><button class="btn" id="loadFolderBtn" onclick="refreshFolders()">加载</button></div></div>
-        <p class="hint" style="margin-top:.4rem">当前目标：<strong id="targetFolder" style="color:var(--accent)">photos/</strong></p>
+        <div class="row"><div class="field"><label>新建文件夹</label><input type="text" id="newFolder" placeholder="如：photo/travel/japan2025"></div><div style="display:flex;align-items:flex-end;gap:.4rem"><button class="btn" onclick="createFolder()">创建</button><button class="btn" id="loadFolderBtn" onclick="refreshFolders()">加载</button></div></div>
+        <p class="hint" style="margin-top:.4rem">当前目标：<strong id="targetFolder" style="color:var(--accent)">photo/</strong></p>
       </div>
 
       <div class="card">
@@ -190,13 +208,14 @@
 
       <div class="card">
         <h2>③ 批量默认值</h2>
-        <div class="row"><div class="field"><label>分类</label><select id="bCat"></select></div><div class="field"><label>地点</label><input type="text" id="bLoc" placeholder="如：贵州"></div><div class="field"><label>年份</label><input type="text" id="bDate" placeholder="2026"></div></div>
+        <div class="row"><div class="field"><label>地点</label><input type="text" id="bLoc" placeholder="如：贵州"></div><div class="field"><label>年份</label><input type="text" id="bDate" placeholder="2026"></div></div>
         <div class="row"><div class="field"><label>标签（逗号分隔）</label><input type="text" id="bTags" placeholder="如：日落, 长焦"></div></div>
+        <p class="hint">分类按 COS 目标文件夹自动确定，不需要在这里设置。</p>
       </div>
 
       <div class="card">
         <h2>④ 选择照片</h2>
-        <div class="upload-zone" id="dropZone" onclick="document.getElementById('fileIn').click()"><div class="icon">📁</div><p>点击选择 或 拖拽到此处</p><small>支持 JPG / PNG，可多选。上传前自动压缩。</small></div>
+        <div class="upload-zone" id="dropZone" onclick="document.getElementById('fileIn').click()"><div class="icon">📁</div><p>点击选择 或 拖拽到此处</p><small>支持 JPG / PNG，可多选。上传前自动压缩，EXIF 已本地读取。</small></div>
         <input type="file" id="fileIn" class="hidden" accept="image/jpeg,image/png" multiple>
         <div id="queueList" style="margin-top:1rem"></div>
       </div>
@@ -204,64 +223,53 @@
       <div class="card"><h2>📋 上传日志</h2><div class="log" id="log"><div class="info">等待操作...</div></div></div>
     </div>
 
-    <!-- ═══ TAB: EDIT ═══ -->
-    <div class="tab-page" id="tab-edit">
+    <!-- ═══ TAB: MANAGE (master-detail) ═══ -->
+    <div class="tab-page" id="tab-manage">
       <div class="card">
-        <div class="edit-toolbar">
+        <div class="mgr-toolbar">
           <label class="check"><input type="checkbox" id="editSelectAll" onchange="toggleSelectAll(this.checked)"> 全选</label>
           <span class="sel-count" id="selCount">已选 0 张</span>
-          <button class="btn btn-sm" onclick="batchEditTags()">批量改标签</button>
-          <button class="btn btn-sm" onclick="batchEditCategory()">批量改分类</button>
+          <button class="btn btn-sm" onclick="batchAddTags()">批量加标签</button>
+          <button class="btn btn-sm" onclick="batchRemoveTags()">批量删标签</button>
+          <button class="btn btn-sm" onclick="batchSetLoc()">批量改地点</button>
+          <button class="btn btn-sm" onclick="batchSetDate()">批量改时间</button>
           <button class="btn btn-sm" onclick="batchMove()">批量移动</button>
           <button class="btn btn-sm btn-danger" onclick="batchDelete()">批量删除</button>
         </div>
 
-        <!-- Filters -->
-        <div class="row" style="margin:.6rem 0;align-items:flex-end">
-          <div class="field" style="min-width:90px;flex:.5">
-            <label>分类/文件夹</label>
-            <select id="filterCat" onchange="renderEditList()"><option value="">全部</option></select>
-          </div>
-          <div class="field" style="min-width:90px;flex:.5">
-            <label>标签</label>
-            <select id="filterTag" onchange="renderEditList()"><option value="">全部</option></select>
-          </div>
-          <div class="field" style="min-width:90px;flex:.5">
-            <label>地点</label>
-            <select id="filterLoc" onchange="renderEditList()"><option value="">全部</option></select>
-          </div>
-          <div class="field" style="min-width:90px;flex:.5">
-            <label>文件夹路径</label>
-            <select id="filterFolder" onchange="renderEditList()"><option value="">全部</option></select>
-          </div>
-          <div class="field" style="min-width:80px;flex:.4">
-            <label>排序</label>
-            <select id="editSort" onchange="renderEditList()"><option value="newest">最新优先</option><option value="oldest">最早优先</option></select>
-          </div>
-          <div style="flex-shrink:0"><button class="btn btn-sm" onclick="clearFilters()">清除</button></div>
+        <div class="row" style="margin-bottom:.6rem">
+          <div class="field" style="min-width:90px;flex:.5"><label>分类/文件夹</label><select id="filterCat" onchange="renderManageList()"><option value="">全部</option></select></div>
+          <div class="field" style="min-width:90px;flex:.5"><label>标签</label><select id="filterTag" onchange="renderManageList()"><option value="">全部</option></select></div>
+          <div class="field" style="min-width:90px;flex:.5"><label>地点</label><select id="filterLoc" onchange="renderManageList()"><option value="">全部</option></select></div>
+          <div class="field" style="min-width:80px;flex:.4"><label>排序</label><select id="editSort" onchange="renderManageList()"><option value="newest">最新优先</option><option value="oldest">最早优先</option></select></div>
+          <div style="flex-shrink:0;align-self:flex-end"><button class="btn btn-sm" onclick="clearFilters()">清除</button></div>
         </div>
         <div class="hint" id="filterInfo" style="margin-bottom:.6rem"></div>
 
-        <div id="editList" style="max-height:600px;overflow-y:auto"></div>
+        <div class="mgr-layout">
+          <div class="mgr-list">
+            <div class="mgr-list-header"><span id="mgrListCount">0 张</span></div>
+            <div class="mgr-list-inner" id="mgrList"></div>
+          </div>
+          <div class="mgr-detail empty" id="mgrDetail">← 从左侧选择一张照片进行编辑</div>
+        </div>
       </div>
 
       <!-- Orphan Scanner -->
       <div class="card">
         <div class="collapsible-header" onclick="toggleOrphanSection()">
           <h2 style="margin-bottom:0">🔍 未收录照片 <span id="orphanCount" style="color:var(--muted);font-weight:300"></span></h2>
-          <span class="toggle-icon" id="orphanToggle">▼</span>
+          <span class="toggle-icon collapsed" id="orphanToggle">▼</span>
         </div>
-        <div class="collapsible-body" id="orphanBody">
-          <p class="hint" style="margin-top:.6rem">扫描 COS 存储桶，找出存在于存储桶但未收录到网站的照片。可编辑属性后添加。</p>
-          <div style="margin-bottom:.8rem">
-            <button class="btn" id="scanBtn" onclick="scanOrphans()">扫描存储桶</button>
-          </div>
+        <div class="collapsible-body collapsed" id="orphanBody">
+          <p class="hint" style="margin-top:.6rem">扫描 COS 存储桶，找出未收录到网站的照片。</p>
+          <div style="margin-bottom:.8rem"><button class="btn" id="scanBtn" onclick="scanOrphans()">扫描存储桶</button></div>
           <div id="scanStats" class="scan-stats hidden"></div>
-          <div id="orphanToolbar" class="edit-toolbar hidden">
+          <div id="orphanToolbar" class="mgr-toolbar hidden" style="margin:0 0 .8rem 0">
             <label class="check"><input type="checkbox" id="orphanSelectAll" onchange="toggleOrphanSelectAll(this.checked)"> 全选</label>
             <span class="sel-count" id="orphanSelCount">已选 0 张</span>
-            <button class="btn btn-sm" style="border-color:var(--green);color:var(--green)" onclick="batchAddOrphans()">批量添加到网站</button>
-            <button class="btn btn-sm btn-danger" onclick="batchDeleteOrphans()">批量从 COS 删除</button>
+            <button class="btn btn-sm" style="border-color:var(--green);color:var(--green)" onclick="batchAddOrphans()">批量添加</button>
+            <button class="btn btn-sm btn-danger" onclick="batchDeleteOrphans()">批量删除</button>
           </div>
           <div id="orphanList" style="max-height:500px;overflow-y:auto"></div>
         </div>
@@ -270,16 +278,88 @@
       <div class="card"><h2>📋 操作日志</h2><div class="log" id="editLog"><div class="info">等待操作...</div></div></div>
     </div>
 
-    <div style="text-align:center;padding:1.5rem 0"><button class="btn btn-danger" onclick="clearCred()">退出登录（清除本地凭证）</button></div>
+    <!-- ═══ TAB: SETTINGS ═══ -->
+    <div class="tab-page" id="tab-settings">
+
+      <!-- Watermark config -->
+      <div class="card">
+        <h2>💧 水印设置</h2>
+        <p class="hint">水印显示在访客大图右下角。</p>
+        <div class="row">
+          <div class="field"><label>水印文字</label><input type="text" id="wmText" onchange="previewWatermark()"></div>
+        </div>
+        <div class="row">
+          <div class="field" style="min-width:90px"><label>字号</label><input type="number" id="wmSize" min="8" max="80" onchange="previewWatermark()"></div>
+          <div class="field" style="min-width:90px"><label>透明度 (0-100)</label><input type="number" id="wmOpacity" min="0" max="100" onchange="previewWatermark()"></div>
+          <div class="field" style="min-width:120px"><label>位置</label><select id="wmPosition" onchange="previewWatermark()">
+            <option value="southeast">右下角</option><option value="south">正下方</option><option value="southwest">左下角</option>
+            <option value="east">右侧</option><option value="center">正中</option><option value="west">左侧</option>
+            <option value="northeast">右上角</option><option value="north">正上方</option><option value="northwest">左上角</option>
+          </select></div>
+          <div class="field" style="min-width:120px"><label>字体颜色</label><select id="wmColor" onchange="previewWatermark()">
+            <option value="I2ZmZmZmZmY=">白色</option>
+            <option value="IzAwMDAwMA==">黑色</option>
+            <option value="I2M0OTU2YQ==">金色</option>
+            <option value="I2ZmMDAwMA==">红色</option>
+          </select></div>
+        </div>
+        <h3>预览</h3>
+        <div class="wm-preview-box" id="wmPreview"><div class="wm-empty">将使用「风光」分类的第一张照片预览</div></div>
+        <div style="margin-top:1rem"><button class="btn btn-p" onclick="saveWatermark()">保存水印设置</button></div>
+      </div>
+
+      <!-- About section -->
+      <div class="card">
+        <h2>👤 关于作者</h2>
+        <div class="row"><div class="field"><label>作者名字</label><input type="text" id="aboutName" onchange="dirtyConfig()"></div></div>
+        <div class="row"><div class="field"><label>头像 URL（完整 COS 地址）</label><input type="text" id="aboutAvatar" onchange="dirtyConfig()" placeholder="https://..."></div></div>
+        <div class="row"><div class="field"><label>个人介绍（每行一段）</label><textarea id="aboutBio" rows="4" onchange="dirtyConfig()"></textarea></div></div>
+        <h3>数据统计</h3>
+        <div id="aboutStats"></div>
+        <h3>联系方式</h3>
+        <div id="aboutContacts"></div>
+        <div style="margin-top:1rem"><button class="btn btn-p" onclick="saveAbout()">保存关于信息</button></div>
+      </div>
+
+      <!-- Backup -->
+      <div class="card">
+        <h2>💾 数据备份与恢复</h2>
+        <p class="hint">备份文件保存在 COS 存储桶的 <code>backup/</code> 目录，不会推送到 GitHub。</p>
+        <div class="row">
+          <button class="btn" onclick="backupData()">立即备份 data.json</button>
+          <button class="btn" onclick="listBackups()">查看备份列表</button>
+        </div>
+        <div id="backupList" style="margin-top:1rem"></div>
+      </div>
+
+      <!-- Init EXIF dates -->
+      <div class="card">
+        <h2>📅 初始化照片日期 (从 EXIF)</h2>
+        <p class="hint">扫描所有照片，从 COS 读取 EXIF 信息，自动填充 date 字段（覆盖原有 date）。每张照片一次 EXIF 请求（付费）。</p>
+        <div class="row">
+          <label class="check"><input type="checkbox" id="initOverwrite"> 覆盖已有的 date 字段（默认只填空字段）</label>
+        </div>
+        <div style="margin-top:.5rem">
+          <button class="btn btn-p" id="initDateBtn" onclick="initAllDates()">开始扫描</button>
+        </div>
+        <div class="progress hidden" id="initProgress"><div class="progress-bar" id="initProgressBar"></div><div class="progress-label" id="initProgressLabel">0 / 0</div></div>
+      </div>
+
+      <div class="card"><h2>📋 操作日志</h2><div class="log" id="settingsLog"><div class="info">等待操作...</div></div></div>
+
+      <div style="text-align:center;padding:1rem 0"><button class="btn btn-danger" onclick="clearCred()">退出登录（清除本地凭证）</button></div>
+    </div>
   </div>
 </div>
 
 <script>
 let CONFIG=null,DATA=null,COS_CLIENT=null;
-let queue=[],qid=0,uploadMaxWidth=1600,uploadQuality=0.85,selectedFolder='photos/';
-let selectedIndices=new Set(),expandedIndex=-1;
-let foldersLoaded=false,foldersList=[];
+let queue=[],qid=0,uploadMaxWidth=1600,uploadQuality=0.85,selectedFolder='photo/';
+let selectedIndices=new Set();
+let currentDetailIndex=-1; // which photo is shown in the right panel
 let orphanFiles=[],orphanSelected=new Set(),orphanExpanded=-1;
+let foldersList=[];
+let configDirty=false;
 
 (async function(){
   const[c,d]=await Promise.all([fetch('./config.json?'+Date.now()),fetch('./data.json?'+Date.now())]);
@@ -294,36 +374,17 @@ async function login(){const h=await sha256(document.getElementById('pwdInput').
 function initAdmin(){
   const t=localStorage.getItem('zx_gh_token'),i=localStorage.getItem('zx_cos_id'),k=localStorage.getItem('zx_cos_key');
   if(t)document.getElementById('ghToken').value=t;if(i)document.getElementById('cosId').value=i;if(k)document.getElementById('cosKey').value=k;
-  // Auto-collapse creds if already saved
-  if(t&&i&&k){
-    document.getElementById('credStatus').textContent='✓ 已配置';
-    toggleCred(); // collapse
-    initCOS(i,k);
-  }
-  document.getElementById('bCat').innerHTML=CONFIG.categories.map(c=>`<option value="${c}">${c}</option>`).join('');
+  if(t&&i&&k){document.getElementById('credStatus').textContent='✓ 已配置';toggleCred();initCOS(i,k)}
   document.getElementById('editCount').textContent=`(${DATA.photos.length})`;
-  // Setup drag/drop
   const zone=document.getElementById('dropZone'),fin=document.getElementById('fileIn');
   zone.ondragover=e=>{e.preventDefault();zone.classList.add('over')};zone.ondragleave=()=>zone.classList.remove('over');
   zone.ondrop=e=>{e.preventDefault();zone.classList.remove('over');addFiles(e.dataTransfer.files)};
   fin.onchange=()=>{addFiles(fin.files);fin.value=''};
 }
 
-/* ═══ CREDENTIALS (collapsible) ═══ */
-function toggleCred(){
-  const body=document.getElementById('credBody'),icon=document.getElementById('credToggle');
-  body.classList.toggle('collapsed');icon.classList.toggle('collapsed');
-}
+function toggleCred(){document.getElementById('credBody').classList.toggle('collapsed');document.getElementById('credToggle').classList.toggle('collapsed')}
 function initCOS(id,key){COS_CLIENT=new COS({SecretId:id,SecretKey:key})}
-function saveCred(){
-  localStorage.setItem('zx_gh_token',document.getElementById('ghToken').value);
-  localStorage.setItem('zx_cos_id',document.getElementById('cosId').value);
-  localStorage.setItem('zx_cos_key',document.getElementById('cosKey').value);
-  initCOS(document.getElementById('cosId').value,document.getElementById('cosKey').value);
-  document.getElementById('credStatus').textContent='✓ 已配置';
-  toggleCred(); // collapse after save
-  foldersLoaded=false; // allow re-fetch
-}
+function saveCred(){localStorage.setItem('zx_gh_token',document.getElementById('ghToken').value);localStorage.setItem('zx_cos_id',document.getElementById('cosId').value);localStorage.setItem('zx_cos_key',document.getElementById('cosKey').value);initCOS(document.getElementById('cosId').value,document.getElementById('cosKey').value);document.getElementById('credStatus').textContent='✓ 已配置';const ok=document.getElementById('credOk');ok.classList.remove('hidden');setTimeout(()=>ok.classList.add('hidden'),2000)}
 function clearCred(){localStorage.removeItem('zx_gh_token');localStorage.removeItem('zx_cos_id');localStorage.removeItem('zx_cos_key');location.reload()}
 
 /* ═══ TABS ═══ */
@@ -332,7 +393,8 @@ function switchTab(name,btn){
   document.querySelectorAll('.tab-page').forEach(p=>p.classList.remove('active'));
   btn.classList.add('active');
   document.getElementById('tab-'+name).classList.add('active');
-  if(name==='edit')renderEditList();
+  if(name==='manage')renderManageList();
+  if(name==='settings')initSettingsTab();
 }
 
 /* ═══ QUALITY ═══ */
@@ -343,11 +405,11 @@ function compressImage(file,maxW,quality){
   return new Promise((res,rej)=>{const reader=new FileReader();reader.onload=e=>{const img=new Image();img.onload=()=>{let w=img.width,h=img.height;if(w>maxW){h=Math.round(h*(maxW/w));w=maxW}const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);c.toBlob(b=>b?res(b):rej(new Error('压缩失败')),'image/jpeg',quality)};img.onerror=()=>rej(new Error('图片加载失败'));img.src=e.target.result};reader.onerror=()=>rej(new Error('读取失败'));reader.readAsDataURL(file)})
 }
 
-/* ═══ FOLDERS (lazy load, cached) ═══ */
+/* ═══ FOLDERS ═══ */
 async function refreshFolders(){
   if(!COS_CLIENT){log('请先保存 COS 凭证','err');return}
   const btn=document.getElementById('loadFolderBtn');btn.textContent='加载中...';btn.disabled=true;
-  try{foldersList=await listAllPrefixes('');renderTree(foldersList);foldersLoaded=true;log(`${foldersList.length} 个文件夹`,'ok')}
+  try{foldersList=await listAllPrefixes('');renderTree(foldersList);log(`${foldersList.length} 个文件夹`,'ok')}
   catch(e){log('加载失败: '+e.message,'err')}
   btn.textContent='刷新';btn.disabled=false;
 }
@@ -355,242 +417,277 @@ async function listAllPrefixes(prefix){const result=[];const data=await cosList(
 function cosList(prefix,delimiter){return new Promise((res,rej)=>{COS_CLIENT.getBucket({Bucket:CONFIG.admin.cos_bucket,Region:CONFIG.admin.cos_region,Prefix:prefix,Delimiter:delimiter},(err,data)=>err?rej(err):res(data))})}
 function renderTree(prefixes){
   const el=document.getElementById('folderTree');
-  if(!prefixes.length){el.innerHTML='<span style="color:var(--muted)">暂无文件夹，请先创建</span>';return}
+  if(!prefixes.length){el.innerHTML='<span style="color:var(--muted)">暂无文件夹</span>';return}
   el.innerHTML=prefixes.map(p=>{const parts=p.replace(/\/$/,'').split('/');const d=parts.length-1;const name=parts[parts.length-1]+'/';const indent=d>0?'│  '.repeat(d-1)+'├─ ':'';return`<span class="f-node${p===selectedFolder?' selected':''}" onclick="selectFolder('${p}',this)"><span class="f-indent">${indent}</span>📁 ${name}</span>`}).join('');
 }
 function selectFolder(path,el){selectedFolder=path;document.getElementById('targetFolder').textContent=path;document.querySelectorAll('.f-node').forEach(n=>n.classList.remove('selected'));if(el)el.classList.add('selected')}
-function createFolder(){const path=document.getElementById('newFolder').value.trim().replace(/^\/|\/$/g,'');if(!path){log('请输入路径','err');return}const full=path+'/';COS_CLIENT.putObject({Bucket:CONFIG.admin.cos_bucket,Region:CONFIG.admin.cos_region,Key:full,Body:''},(err)=>{if(err){log('创建失败: '+err.message,'err');return}log(`✓ ${full} 创建成功`,'ok');document.getElementById('newFolder').value='';selectedFolder=full;document.getElementById('targetFolder').textContent=full;foldersLoaded=false;refreshFolders()})}
-function getFolderOptions(){if(!foldersList.length)return'<option value="photos/">photos/</option>';return foldersList.map(f=>`<option value="${f}">${f}</option>`).join('')}
+function createFolder(){const path=document.getElementById('newFolder').value.trim().replace(/^\/|\/$/g,'');if(!path){log('请输入路径','err');return}const full=path+'/';COS_CLIENT.putObject({Bucket:CONFIG.admin.cos_bucket,Region:CONFIG.admin.cos_region,Key:full,Body:''},(err)=>{if(err){log('创建失败: '+err.message,'err');return}log(`✓ ${full} 创建成功`,'ok');document.getElementById('newFolder').value='';selectedFolder=full;document.getElementById('targetFolder').textContent=full;refreshFolders()})}
+
+/* ═══ EXIF ═══ */
+function frac2num(s){if(typeof s!=='string'||!s.includes('/'))return parseFloat(s)||0;const[a,b]=s.split('/').map(Number);return b?a/b:0}
+function fmtShutter(s){if(s===null||s===undefined||s==='')return '';if(typeof s==='string'&&s.includes('/')){const[a,b]=s.split('/').map(Number);if(b===0)return '';if(a>=b)return(a/b)+'s';return `${a}/${b}s`}const val=parseFloat(s);if(isNaN(val))return '';if(val>=1)return val+'s';return `1/${Math.round(1/val)}s`}
+function normalizeExif(raw,source){if(!raw)return false;let make,model,fnum,shutter,iso,focal,datetime;if(source==='local'){make=raw.Make||'';model=raw.Model||'';fnum=raw.FNumber;shutter=raw.ExposureTime;iso=raw.ISO||raw.ISOSpeedRatings;focal=raw.FocalLength;datetime=raw.DateTimeOriginal||raw.DateTime;if(datetime instanceof Date){const p=n=>String(n).padStart(2,'0');datetime=`${datetime.getFullYear()}:${p(datetime.getMonth()+1)}:${p(datetime.getDate())} ${p(datetime.getHours())}:${p(datetime.getMinutes())}:${p(datetime.getSeconds())}`}}else{const g=k=>raw[k]?.val||'';make=g('Make');model=g('Model');fnum=g('FNumber')?frac2num(g('FNumber')):0;shutter=g('ExposureTime');iso=g('ISOSpeedRatings')||g('ISO');focal=g('FocalLength')?frac2num(g('FocalLength')):0;datetime=g('DateTimeOriginal')||g('DateTime')||''}return{make:String(make||'').replace(/\s*CORPORATION\s*/i,'').trim(),model:String(model||'').trim(),aperture:fnum?`f/${Math.round(fnum*10)/10}`:'',shutter:fmtShutter(shutter),iso:iso?String(iso):'',focal:focal?`${Math.round(focal)}mm`:'',datetime:datetime||''}}
+async function readExifFromFile(file){if(typeof exifr==='undefined')return false;try{const raw=await exifr.parse(file,{pick:['Make','Model','FNumber','ExposureTime','ISO','ISOSpeedRatings','FocalLength','DateTimeOriginal','DateTime']});if(!raw)return false;return normalizeExif(raw,'local')}catch(e){console.error(e);return false}}
+async function fetchExif(fileKey){const url=CONFIG.cos_base+'/'+fileKey.replace(/^\//,'')+'?exif';try{const res=await fetch(url);if(!res.ok)return false;const d=await res.json();if(!d||d.error)return false;return normalizeExif(d,'remote')}catch(e){console.error(e);return false}}
+function exifDateToYM(dt){if(!dt)return '';const m=String(dt).match(/^(\d{4})[:\-](\d{2})/);return m?`${m[1]}-${m[2]}`:''}
 
 /* ═══ UPLOAD QUEUE ═══ */
 async function addFiles(fileList){
-  const cat=document.getElementById('bCat').value,loc=document.getElementById('bLoc').value,date=document.getElementById('bDate').value||new Date().getFullYear().toString(),tags=document.getElementById('bTags').value;
+  const loc=document.getElementById('bLoc').value,date=document.getElementById('bDate').value,tags=document.getElementById('bTags').value;
   for(const file of Array.from(fileList)){
     if(!file.type.startsWith('image/'))continue;
     const blob=URL.createObjectURL(file);
     let wide=false,tall=false;
     try{const dim=await new Promise((res,rej)=>{const img=new Image();img.onload=()=>res({w:img.naturalWidth,h:img.naturalHeight});img.onerror=rej;img.src=blob});const r=dim.w/dim.h;if(r>=1.8)wide=true;else if(r<=0.75)tall=true}catch(e){}
-    queue.push({id:++qid,file,blob,title:file.name.replace(/\.[^.]+$/,''),category:cat,location:loc,date,tags,notes:'',wide,tall,autoOrientation:true,status:'pending',origSize:file.size,compressedSize:0});
+    queue.push({id:++qid,file,blob,title:file.name.replace(/\.[^.]+$/,''),location:loc,date,tags,notes:'',wide,tall,status:'pending',origSize:file.size,compressedSize:0});
   }
   renderQueue();
-}
-function renderQueue(){
-  const el=document.getElementById('queueList');if(!queue.length){el.innerHTML='';return}
-  const catOpts=CONFIG.categories.map(c=>`<option value="${c}">${c}</option>`).join('');
-  el.innerHTML=queue.map(q=>`<div class="queue-item" id="qi-${q.id}"><img src="${q.blob}" class="q-thumb"><div class="fields"><div class="row"><div class="field" style="flex:2"><label>标题</label><input value="${esc(q.title)}" onchange="qUpd(${q.id},'title',this.value)"></div><div class="field"><label>分类</label><select onchange="qUpd(${q.id},'category',this.value)">${catOpts.replace('value="'+q.category+'"','value="'+q.category+'" selected')}</select></div></div><div class="row"><div class="field"><label>地点</label><input value="${esc(q.location)}" onchange="qUpd(${q.id},'location',this.value)"></div><div class="field"><label>年份</label><input value="${esc(q.date)}" onchange="qUpd(${q.id},'date',this.value)"></div><div class="field"><label>标签</label><input value="${esc(q.tags)}" onchange="qUpd(${q.id},'tags',this.value)"></div></div><div class="row"><div class="field" style="flex:3"><label>拍摄手记</label><textarea rows="2" onchange="qUpd(${q.id},'notes',this.value)">${esc(q.notes)}</textarea></div></div><div class="row"><label class="check"><input type="checkbox" ${q.wide?'checked':''} onchange="qUpd(${q.id},'wide',this.checked)"> 宽幅</label><label class="check"><input type="checkbox" ${q.tall?'checked':''} onchange="qUpd(${q.id},'tall',this.checked)"> 竖版</label>${q.autoOrientation&&(q.wide||q.tall)?'<span style="font-size:.68rem;color:var(--blue);margin-left:.3rem">(自动识别)</span>':''}<span style="font-size:.72rem;color:var(--muted);margin-left:auto">原始 ${fmtSize(q.origSize)}${q.compressedSize?' → '+fmtSize(q.compressedSize):''}</span></div><div class="q-status ${q.status}" id="qs-${q.id}">${statusText(q.status)}</div></div><button class="queue-remove" onclick="qDel(${q.id})">✕</button></div>`).join('');
 }
 function esc(s){return(s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;')}
 function fmtSize(b){if(b<1024)return b+'B';if(b<1048576)return(b/1024).toFixed(0)+'KB';return(b/1048576).toFixed(1)+'MB'}
 function statusText(s){return{pending:'待上传',compressing:'🔄 压缩中...',uploading:'⏳ 上传中...',done:'✓ 完成',error:'✗ 失败'}[s]||s}
-function qUpd(id,k,v){const q=queue.find(x=>x.id===id);if(q){q[k]=v;if(k==='wide'||k==='tall')q.autoOrientation=false}}
+function qUpd(id,k,v){const q=queue.find(x=>x.id===id);if(q){q[k]=v}}
 function qDel(id){queue=queue.filter(x=>x.id!==id);renderQueue()}
 function setQS(id,status){const el=document.getElementById('qs-'+id);if(el){el.className='q-status '+status;el.textContent=statusText(status)}}
 
-/* ═══════════════════════════════════════
-   EDIT PAGE (独立界面)
-   ═══════════════════════════════════════ */
-let filteredEditIndices=[];
+function renderQueue(){
+  const el=document.getElementById('queueList');if(!queue.length){el.innerHTML='';return}
+  el.innerHTML=queue.map(q=>`<div class="queue-item" id="qi-${q.id}"><img src="${q.blob}" class="q-thumb"><div class="fields"><div class="row"><div class="field" style="flex:2"><label>标题</label><input value="${esc(q.title)}" onchange="qUpd(${q.id},'title',this.value)"></div></div><div class="row"><div class="field"><label>地点</label><input value="${esc(q.location)}" onchange="qUpd(${q.id},'location',this.value)"></div><div class="field"><label>年份/时间</label><input value="${esc(q.date)}" onchange="qUpd(${q.id},'date',this.value)"></div><div class="field"><label>标签</label><input value="${esc(q.tags)}" onchange="qUpd(${q.id},'tags',this.value)"></div></div><div class="row"><div class="field" style="flex:3"><label>拍摄手记</label><textarea rows="1" onchange="qUpd(${q.id},'notes',this.value)">${esc(q.notes)}</textarea></div></div><div class="row"><label class="check"><input type="checkbox" ${q.wide?'checked':''} onchange="qUpd(${q.id},'wide',this.checked)"> 宽幅</label><label class="check"><input type="checkbox" ${q.tall?'checked':''} onchange="qUpd(${q.id},'tall',this.checked)"> 竖版</label><span style="font-size:.72rem;color:var(--muted);margin-left:auto">${fmtSize(q.origSize)}${q.compressedSize?' → '+fmtSize(q.compressedSize):''}</span></div><div class="q-status ${q.status}" id="qs-${q.id}">${statusText(q.status)}</div></div><button class="queue-remove" onclick="qDel(${q.id})">✕</button></div>`).join('');
+}
 
-/* Category from folder path: /photo/风光/xxx.jpg → 风光 */
+/* ═══════════════════════════════════════
+   MANAGE (master-detail)
+   ═══════════════════════════════════════ */
 function getCat(p){const parts=p.file.replace(/^\//,'').split('/');return parts.length>=2?parts[parts.length-2]:'未分类'}
 function getFolder(p){const parts=p.file.replace(/^\//,'').split('/');return parts.length>1?parts.slice(0,-1).join('/')+'/':''}
 
+/* Collect global tag pool from all photos */
+function getAllTags(){const s=new Set();DATA.photos.forEach(p=>(p.tags||[]).forEach(t=>s.add(t)));return[...s].sort()}
+function getAllLocs(){const s=new Set();DATA.photos.forEach(p=>{if(p.location)s.add(p.location)});return[...s].sort()}
+
+let filteredIdx=[];
+
 function populateFilters(){
-  const cats=new Set(),tags=new Set(),locs=new Set(),folders=new Set();
-  DATA.photos.forEach(p=>{
-    cats.add(getCat(p));
-    (p.tags||[]).forEach(t=>tags.add(t));
-    if(p.location)locs.add(p.location);
-    const f=getFolder(p);if(f)folders.add(f);
-  });
-
-  const populate=(id,items,label)=>{
-    const sel=document.getElementById(id),cur=sel.value;
-    sel.innerHTML=`<option value="">全部</option>`+[...items].sort().map(v=>`<option value="${v}"${v===cur?' selected':''}>${v}</option>`).join('');
-  };
-  populate('filterCat',[...cats],'');
-  populate('filterTag',[...tags],'');
-  populate('filterLoc',[...locs],'');
-  populate('filterFolder',[...folders],'');
+  const cats=new Set(),tags=new Set(),locs=new Set();
+  DATA.photos.forEach(p=>{cats.add(getCat(p));(p.tags||[]).forEach(t=>tags.add(t));if(p.location)locs.add(p.location)});
+  const pop=(id,items)=>{const sel=document.getElementById(id),cur=sel.value;sel.innerHTML=`<option value="">全部</option>`+[...items].sort().map(v=>`<option value="${v}"${v===cur?' selected':''}>${v}</option>`).join('')};
+  pop('filterCat',cats);pop('filterTag',tags);pop('filterLoc',locs);
 }
 
-function clearFilters(){
-  ['filterCat','filterTag','filterLoc','filterFolder'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('editSort').value='newest';
-  renderEditList();
-}
+function clearFilters(){['filterCat','filterTag','filterLoc'].forEach(id=>document.getElementById(id).value='');document.getElementById('editSort').value='newest';renderManageList()}
 
-function renderEditList(){
+function renderManageList(){
   populateFilters();
-  const el=document.getElementById('editList');
-  selectedIndices.clear();expandedIndex=-1;updateSelCount();
+  selectedIndices.clear();updateSelCount();
   document.getElementById('editSelectAll').checked=false;
   document.getElementById('editCount').textContent=`(${DATA.photos.length})`;
 
   const fCat=document.getElementById('filterCat').value;
   const fTag=document.getElementById('filterTag').value;
   const fLoc=document.getElementById('filterLoc').value;
-  const fFolder=document.getElementById('filterFolder').value;
   const sortDir=document.getElementById('editSort').value;
 
-  filteredEditIndices=[];
+  filteredIdx=[];
   DATA.photos.forEach((p,i)=>{
     if(fCat&&getCat(p)!==fCat)return;
     if(fTag&&!(p.tags||[]).includes(fTag))return;
     if(fLoc&&p.location!==fLoc)return;
-    if(fFolder&&getFolder(p)!==fFolder)return;
-    filteredEditIndices.push(i);
+    filteredIdx.push(i);
   });
+  filteredIdx.sort((a,b)=>{const da=DATA.photos[a].date||'',db=DATA.photos[b].date||'';return sortDir==='newest'?db.localeCompare(da):da.localeCompare(db)});
 
-  // Sort by date field
-  filteredEditIndices.sort((a,b)=>{
-    const da=DATA.photos[a].date||'',db=DATA.photos[b].date||'';
-    return sortDir==='newest'?db.localeCompare(da):da.localeCompare(db);
-  });
+  const hasF=fCat||fTag||fLoc;
+  document.getElementById('filterInfo').textContent=hasF?`筛选: ${filteredIdx.length} / ${DATA.photos.length}`:'';
+  document.getElementById('mgrListCount').textContent=`${filteredIdx.length} 张`;
 
-  const info=document.getElementById('filterInfo');
-  const hasFilter=fCat||fTag||fLoc||fFolder;
-  info.textContent=hasFilter?`筛选结果: ${filteredEditIndices.length} / ${DATA.photos.length} 张`:'';
-
-  el.innerHTML=filteredEditIndices.map(i=>{
+  const listEl=document.getElementById('mgrList');
+  listEl.innerHTML=filteredIdx.map(i=>{
     const p=DATA.photos[i];
     const cat=getCat(p);
-    const tagsStr=(p.tags||[]).join(', ');
-    return`<div class="edit-item" id="ei-${i}">
-      <div class="edit-item-header" onclick="toggleExpand(${i})">
-        <div class="ei-check" onclick="event.stopPropagation()"><input type="checkbox" data-idx="${i}" onchange="toggleSelect(${i},this.checked)"></div>
-        <img class="ei-thumb" src="${CONFIG.cos_base}${p.file}?imageMogr2/thumbnail/160x" onerror="this.style.opacity='.2'">
-        <div class="ei-info"><div class="t">${p.title}</div><div class="m">${cat} · ${p.location} · ${p.date}${tagsStr?' · '+tagsStr:''}</div><div class="m-path">${p.file}</div></div>
-        <div class="ei-actions" onclick="event.stopPropagation()">
-          <button class="btn btn-sm btn-danger" onclick="delPhoto(${i})">删除</button>
-        </div>
-        <span class="ei-expand">▶</span>
+    const isActive=i===currentDetailIndex;
+    return`<div class="mgr-row${isActive?' active':''}" onclick="selectDetail(${i},event)">
+      <div class="m-check" onclick="event.stopPropagation()"><input type="checkbox" data-idx="${i}" onchange="toggleSelect(${i},this.checked)"></div>
+      <img class="m-thumb" src="${CONFIG.cos_base}${p.file}?imageMogr2/thumbnail/120x" loading="lazy" onerror="this.style.opacity='.2'">
+      <div class="m-info">
+        <div class="m-title">${p.title}</div>
+        <div class="m-meta">${cat} · ${p.location||'-'} · ${p.date||'-'}${(p.tags||[]).length?' · '+p.tags.join('/'):''}</div>
       </div>
-      <div class="edit-panel" id="ep-${i}"></div>
     </div>`;
   }).join('');
+
+  // Restore detail
+  if(currentDetailIndex>=0&&filteredIdx.includes(currentDetailIndex))renderDetail(currentDetailIndex);
+  else showEmptyDetail();
 }
 
-async function toggleExpand(i){
-  // Close previous
-  if(expandedIndex>=0&&expandedIndex!==i){
-    const oldPanel=document.getElementById('ep-'+expandedIndex);
-    if(oldPanel){oldPanel.classList.remove('open');oldPanel.innerHTML=''}
-    const oldArrow=document.querySelector('#ei-'+expandedIndex+' .ei-expand');
-    if(oldArrow)oldArrow.textContent='▶';
-  }
+function showEmptyDetail(){
+  currentDetailIndex=-1;
+  const d=document.getElementById('mgrDetail');
+  d.classList.add('empty');
+  d.innerHTML='← 从左侧选择一张照片进行编辑';
+}
 
-  const panel=document.getElementById('ep-'+i);
-  const arrow=document.querySelector('#ei-'+i+' .ei-expand');
+function selectDetail(i,e){
+  currentDetailIndex=i;
+  document.querySelectorAll('.mgr-row').forEach(r=>r.classList.remove('active'));
+  if(e&&e.currentTarget)e.currentTarget.classList.add('active');
+  renderDetail(i);
+}
 
-  if(expandedIndex===i){
-    panel.classList.remove('open');panel.innerHTML='';
-    arrow.textContent='▶';expandedIndex=-1;return;
-  }
-
-  expandedIndex=i;arrow.textContent='▼';
+function renderDetail(i){
   const p=DATA.photos[i];
-  const catOpts=CONFIG.categories.map(c=>`<option value="${c}"${c===p.category?' selected':''}>${c}</option>`).join('');
+  const d=document.getElementById('mgrDetail');
+  d.classList.remove('empty');
 
   // EXIF display
-  const ex=p.exif;
   let exifHtml='';
-  if(ex&&ex!==false){
-    const parts=[ex.make,ex.model,ex.aperture,ex.shutter,ex.iso?'ISO '+ex.iso:'',ex.focal].filter(Boolean);
-    exifHtml=`<div style="font-size:.78rem;color:var(--dim);margin-top:.4rem;padding:.4rem .6rem;background:var(--bg);border-radius:var(--r)">📷 ${parts.join(' · ')||'无拍摄参数'}</div>`;
+  if(p.exif&&p.exif!==false){
+    const parts=[p.exif.make,p.exif.model,p.exif.aperture,p.exif.shutter,p.exif.iso?'ISO '+p.exif.iso:'',p.exif.focal].filter(Boolean);
+    if(parts.length)exifHtml=`<div style="font-size:.78rem;color:var(--dim);margin:.5rem 0;padding:.4rem .6rem;background:var(--bg3);border-radius:var(--r)">📷 ${parts.join(' · ')}</div>`;
   }
 
-  const dtVal=ex&&ex.datetime?ex.datetime:'';
+  // Tag chips
+  const photoTags=p.tags||[];
+  const allTags=getAllTags();
+  const myTags=photoTags.filter(t=>allTags.includes(t));
+  const otherTags=allTags.filter(t=>!photoTags.includes(t));
 
-  panel.innerHTML=`<div class="edit-panel-inner">
-    <div class="ep-preview"><img src="${CONFIG.cos_base}${p.file}?imageMogr2/thumbnail/440x" onerror="this.style.opacity='.3'"></div>
-    <div class="ep-fields">
-      <div class="row"><div class="field"><label>标题</label><input value="${esc(p.title)}" onchange="exUpd(${i},'title',this.value)"></div></div>
-      <div class="row"><div class="field"><label>分类</label><select onchange="exUpd(${i},'category',this.value)">${catOpts}</select></div><div class="field"><label>地点</label><input value="${esc(p.location)}" onchange="exUpd(${i},'location',this.value)"></div><div class="field"><label>时间</label><input value="${esc(p.date)}" onchange="exUpd(${i},'date',this.value)"></div></div>
-      <div class="row"><div class="field"><label>标签（逗号分隔）</label><input value="${esc((p.tags||[]).join(', '))}" onchange="exUpdTags(${i},this.value)"></div></div>
-      <div class="row"><div class="field"><label>拍摄手记</label><textarea rows="3" onchange="exUpd(${i},'notes',this.value)">${esc(p.notes||'')}</textarea></div></div>
-      <div class="row"><label class="check"><input type="checkbox" ${p.wide?'checked':''} onchange="exUpd(${i},'wide',this.checked)"> 宽幅</label><label class="check"><input type="checkbox" ${p.tall?'checked':''} onchange="exUpd(${i},'tall',this.checked)"> 竖版</label></div>
-      <div class="row"><div class="field"><label>拍摄时间 (EXIF)</label><input value="${esc(dtVal)}" onchange="exUpdExifDt(${i},this.value)" placeholder="如：2024:06:15 14:30:00"></div>
-      ${p.exif===undefined?`<button class="btn btn-sm" style="align-self:flex-end" onclick="fetchExifForPhoto(${i})">获取 EXIF</button>`:''}
-      </div>
-      ${exifHtml}
-      <div class="ep-move">
-        <p class="hint" style="margin-bottom:.4rem"><strong>移动存储位置</strong></p>
-        <div class="row"><div class="field"><label>目标文件夹</label><select id="moveSel-${i}">${getFolderOptions()}</select></div><button class="btn btn-sm" style="align-self:flex-end" onclick="movePhoto(${i})">移动</button></div>
-      </div>
+  const tagChips=[...myTags.map(t=>`<span class="chip active" onclick="togglePhotoTag(${i},'${esc(t)}')">${t}</span>`),
+                  ...otherTags.map(t=>`<span class="chip" onclick="togglePhotoTag(${i},'${esc(t)}')">${t}</span>`)].join('');
+  // Tags unique to this photo (not in global pool) - add them to "my" section anyway
+  const uniqueTags=photoTags.filter(t=>!allTags.includes(t));
+  const uniqueChips=uniqueTags.map(t=>`<span class="chip active" onclick="togglePhotoTag(${i},'${esc(t)}')">${t}</span>`).join('');
+
+  // Location chips (single-select)
+  const allLocs=getAllLocs();
+  const locChips=allLocs.map(l=>`<span class="chip${l===p.location?' single-active':''}" onclick="togglePhotoLoc(${i},'${esc(l)}')">${l}</span>`).join('');
+
+  const exifDt=p.exif&&p.exif.datetime?p.exif.datetime:'';
+
+  d.innerHTML=`
+    <img class="mdet-preview" src="${CONFIG.cos_base}${p.file}?imageMogr2/thumbnail/800x" onerror="this.style.opacity='.3'">
+    <h3 class="mdet-title">${p.title}</h3>
+    <div class="mdet-path">${p.file}</div>
+    ${exifHtml}
+
+    <div class="row"><div class="field"><label>标题</label><input value="${esc(p.title)}" onchange="dUpd(${i},'title',this.value)"></div><div class="field"><label>时间 (年-月)</label><input value="${esc(p.date)}" onchange="dUpd(${i},'date',this.value)"></div></div>
+
+    <div class="field"><label>地点（单选，再点击取消）</label><div class="chip-picker">${locChips}<span class="chip chip-add" onclick="addNewLoc(${i})">+ 新建地点</span></div></div>
+
+    <div class="field" style="margin-top:.5rem"><label>标签（点击切换选中）</label><div class="chip-picker">${uniqueChips}${tagChips}<span class="chip chip-add" onclick="addNewTag(${i})">+ 新建标签</span></div></div>
+
+    <div class="row" style="margin-top:.5rem"><div class="field"><label>拍摄手记</label><textarea rows="1" onchange="dUpd(${i},'notes',this.value)">${esc(p.notes||'')}</textarea></div></div>
+
+    <div class="row"><label class="check"><input type="checkbox" ${p.wide?'checked':''} onchange="dUpd(${i},'wide',this.checked)"> 宽幅</label><label class="check"><input type="checkbox" ${p.tall?'checked':''} onchange="dUpd(${i},'tall',this.checked)"> 竖版</label></div>
+
+    <div class="row" style="margin-top:.5rem"><div class="field"><label>拍摄时间 (EXIF)</label><input value="${esc(exifDt)}" onchange="dUpdExifDt(${i},this.value)" placeholder="2024:06:15 14:30:00"></div>
+    ${p.exif===undefined?`<div style="align-self:flex-end"><button class="btn btn-sm" onclick="fetchExifForPhoto(${i})">获取 EXIF</button></div>`:''}
     </div>
-  </div>`;
-  panel.classList.add('open');
+
+    <div style="margin-top:1rem;padding-top:.8rem;border-top:1px solid var(--border)">
+      <p class="hint" style="margin-bottom:.4rem">移动存储位置</p>
+      <div class="row"><div class="field"><label>目标文件夹</label><select id="moveSel-${i}">${getFolderOptions()}</select></div><button class="btn btn-sm" style="align-self:flex-end" onclick="movePhoto(${i})">移动</button></div>
+      <div style="margin-top:.5rem"><button class="btn btn-sm btn-danger" onclick="delPhoto(${i})">删除这张照片</button></div>
+    </div>
+  `;
 }
+
+function getFolderOptions(){if(!foldersList.length)return'<option value="photo/">photo/</option>';return foldersList.map(f=>`<option value="${f}">${f}</option>`).join('')}
+
+function dUpd(i,k,v){DATA.photos[i][k]=v;DATA._dirty=true;renderManageList()}
+
+function dUpdExifDt(i,v){if(!DATA.photos[i].exif||DATA.photos[i].exif===false)DATA.photos[i].exif={};DATA.photos[i].exif.datetime=v;const ym=exifDateToYM(v);if(ym)DATA.photos[i].date=ym;DATA._dirty=true;renderManageList()}
 
 async function fetchExifForPhoto(i){
   editLog(`获取 EXIF: ${DATA.photos[i].title}...`,'info');
-  await enrichWithExif(DATA.photos[i]);
-  const ex=DATA.photos[i].exif;
-  if(ex&&ex.model)editLog(`✓ ${ex.model} ${ex.aperture} ${ex.shutter}`,'ok');
-  else editLog('未找到 EXIF 数据','info');
-  DATA._dirty=true;
-  toggleExpand(i);toggleExpand(i); // close and reopen to refresh
+  const exif=await fetchExif(DATA.photos[i].file);
+  DATA.photos[i].exif=exif||false;
+  if(exif&&exif.model){editLog(`✓ ${exif.model} ${exif.aperture} ${exif.shutter}`,'ok');if(!DATA.photos[i].date&&exif.datetime){const ym=exifDateToYM(exif.datetime);if(ym)DATA.photos[i].date=ym}}
+  else editLog('未找到 EXIF','info');
+  DATA._dirty=true;renderDetail(i);
 }
 
-function exUpdExifDt(i,v){
-  if(!DATA.photos[i].exif||DATA.photos[i].exif===false)DATA.photos[i].exif={};
-  DATA.photos[i].exif.datetime=v;
-  // Auto-update date from datetime
-  const ym=exifDateToYM(v);
-  if(ym)DATA.photos[i].date=ym;
-  DATA._dirty=true;
+/* Tag / Location chip interactions */
+function togglePhotoTag(i,tag){
+  const p=DATA.photos[i];
+  if(!p.tags)p.tags=[];
+  const idx=p.tags.indexOf(tag);
+  if(idx>=0)p.tags.splice(idx,1);else p.tags.push(tag);
+  DATA._dirty=true;renderDetail(i);renderManageList();
+}
+function togglePhotoLoc(i,loc){
+  const p=DATA.photos[i];
+  if(p.location===loc)p.location='';else p.location=loc;
+  DATA._dirty=true;renderDetail(i);renderManageList();
+}
+function addNewTag(i){
+  const v=prompt('输入新标签：');
+  if(!v||!v.trim())return;
+  const tag=v.trim();
+  if(!DATA.photos[i].tags)DATA.photos[i].tags=[];
+  if(!DATA.photos[i].tags.includes(tag))DATA.photos[i].tags.push(tag);
+  DATA._dirty=true;renderDetail(i);renderManageList();
+}
+function addNewLoc(i){
+  const v=prompt('输入新地点：');
+  if(!v||!v.trim())return;
+  DATA.photos[i].location=v.trim();
+  DATA._dirty=true;renderDetail(i);renderManageList();
 }
 
-function exUpd(i,k,v){DATA.photos[i][k]=v;DATA._dirty=true;
-  // Live update header text
-  const el=document.querySelector('#ei-'+i+' .t');
-  if(el&&k==='title')el.textContent=v;
-}
-function exUpdTags(i,v){DATA.photos[i].tags=v.split(/[,，]/).map(t=>t.trim()).filter(Boolean);DATA._dirty=true}
-
-/* ═══ SELECT & BATCH ═══ */
+/* Selection */
 function toggleSelect(i,checked){if(checked)selectedIndices.add(i);else selectedIndices.delete(i);updateSelCount()}
-function toggleSelectAll(checked){
-  const boxes=document.querySelectorAll('.ei-check input');
-  boxes.forEach(b=>{
-    b.checked=checked;
-    const idx=parseInt(b.dataset.idx);
-    if(checked)selectedIndices.add(idx);else selectedIndices.delete(idx);
-  });
-  updateSelCount();
-}
+function toggleSelectAll(checked){document.querySelectorAll('.m-check input').forEach(b=>{b.checked=checked;const idx=parseInt(b.dataset.idx);if(checked)selectedIndices.add(idx);else selectedIndices.delete(idx)});updateSelCount()}
 function updateSelCount(){document.getElementById('selCount').textContent=`已选 ${selectedIndices.size} 张`}
 
-function batchEditTags(){
-  if(!selectedIndices.size){editLog('请先勾选照片','err');return}
-  const input=prompt('输入新标签（逗号分隔）：\n留空 = 清除标签\n输入 +标签 = 追加不覆盖');
-  if(input===null)return;
-  const isAppend=input.startsWith('+');
-  const newTags=(isAppend?input.substring(1):input).split(/[,，]/).map(t=>t.trim()).filter(Boolean);
-  selectedIndices.forEach(i=>{DATA.photos[i].tags=isAppend?[...new Set([...(DATA.photos[i].tags||[]),...newTags])]:newTags});
-  DATA._dirty=true;editLog(`✓ ${selectedIndices.size} 张照片标签已修改`,'ok');renderEditList();
+/* ═══ BATCH OPS ═══ */
+function batchAddTags(){
+  if(!selectedIndices.size){editLog('请先勾选','err');return}
+  const allTags=getAllTags();
+  const v=prompt(`批量加标签（逗号分隔，影响 ${selectedIndices.size} 张）：\n\n已有标签：${allTags.join(', ')||'(无)'}`);
+  if(!v)return;
+  const newTags=v.split(/[,，]/).map(t=>t.trim()).filter(Boolean);
+  selectedIndices.forEach(i=>{if(!DATA.photos[i].tags)DATA.photos[i].tags=[];DATA.photos[i].tags=[...new Set([...DATA.photos[i].tags,...newTags])]});
+  DATA._dirty=true;editLog(`✓ ${selectedIndices.size} 张添加标签: ${newTags.join(', ')}`,'ok');renderManageList();
 }
-function batchEditCategory(){
-  if(!selectedIndices.size){editLog('请先勾选照片','err');return}
-  const cats=CONFIG.categories;
-  const input=prompt('选择分类：\n'+cats.map((c,i)=>`${i+1}. ${c}`).join('\n'));
-  if(!input)return;const idx=parseInt(input)-1;
-  if(idx<0||idx>=cats.length){editLog('无效选择','err');return}
-  selectedIndices.forEach(i=>{DATA.photos[i].category=cats[idx]});
-  DATA._dirty=true;editLog(`✓ ${selectedIndices.size} 张 → 「${cats[idx]}」`,'ok');renderEditList();
+function batchRemoveTags(){
+  if(!selectedIndices.size){editLog('请先勾选','err');return}
+  // Collect tags present in selected
+  const presentTags=new Set();
+  selectedIndices.forEach(i=>(DATA.photos[i].tags||[]).forEach(t=>presentTags.add(t)));
+  if(!presentTags.size){editLog('选中照片没有标签','info');return}
+  const list=[...presentTags].sort();
+  const v=prompt(`选中的照片共有以下标签，输入要删除的（逗号分隔）：\n\n${list.join(', ')}`);
+  if(!v)return;
+  const toRemove=v.split(/[,，]/).map(t=>t.trim()).filter(Boolean);
+  selectedIndices.forEach(i=>{if(DATA.photos[i].tags)DATA.photos[i].tags=DATA.photos[i].tags.filter(t=>!toRemove.includes(t))});
+  DATA._dirty=true;editLog(`✓ 已删除 ${toRemove.join(', ')}`,'ok');renderManageList();
+}
+function batchSetLoc(){
+  if(!selectedIndices.size){editLog('请先勾选','err');return}
+  const allLocs=getAllLocs();
+  const v=prompt(`批量改地点（影响 ${selectedIndices.size} 张）：\n\n已有地点：${allLocs.join(', ')||'(无)'}\n\n输入新地点（留空清除地点）：`);
+  if(v===null)return;
+  selectedIndices.forEach(i=>{DATA.photos[i].location=v.trim()});
+  DATA._dirty=true;editLog(`✓ ${selectedIndices.size} 张地点: ${v||'(已清空)'}`,'ok');renderManageList();
+}
+function batchSetDate(){
+  if(!selectedIndices.size){editLog('请先勾选','err');return}
+  const v=prompt(`批量改时间（影响 ${selectedIndices.size} 张）\n格式示例: 2024 或 2024-06`);
+  if(v===null)return;
+  selectedIndices.forEach(i=>{DATA.photos[i].date=v.trim()});
+  DATA._dirty=true;editLog(`✓ 时间: ${v}`,'ok');renderManageList();
 }
 
-/* ═══ MOVE (with confirm + verify) ═══ */
 function cosHeadObject(key){return new Promise((res,rej)=>{COS_CLIENT.headObject({Bucket:CONFIG.admin.cos_bucket,Region:CONFIG.admin.cos_region,Key:key},(err,data)=>err?rej(err):res(data))})}
 
 async function batchMove(){
-  if(!selectedIndices.size){editLog('请先勾选照片','err');return}
-  if(!COS_CLIENT){editLog('请先保存 COS 凭证','err');return}
-  const target=prompt('输入目标文件夹路径（如 photos/landscape/）：');
+  if(!selectedIndices.size){editLog('请先勾选','err');return}
+  if(!COS_CLIENT){editLog('请先保存凭证','err');return}
+  const target=prompt('输入目标文件夹（如 photo/风光/）：');
   if(!target)return;const folder=target.endsWith('/')?target:target+'/';
   const names=[...selectedIndices].map(i=>DATA.photos[i].file.split('/').pop());
-  if(!confirm(`确认移动 ${names.length} 张到 ${folder}？\n\n${names.slice(0,8).join('\n')}${names.length>8?'\n...等 '+names.length+' 张':''}`))return;
+  if(!confirm(`确认移动 ${names.length} 张到 ${folder}？\n\n${names.slice(0,8).join('\n')}${names.length>8?'\n...':''}`))return;
   editLog(`批量移动 → ${folder}`,'info');let moved=0;
   for(const i of selectedIndices){
     const p=DATA.photos[i],oldKey=p.file.replace(/^\//,''),fileName=oldKey.split('/').pop(),newKey=folder+fileName;
@@ -599,260 +696,308 @@ async function batchMove(){
       await cosHeadObject(newKey);
       await new Promise((res,rej)=>{COS_CLIENT.deleteObject({Bucket:CONFIG.admin.cos_bucket,Region:CONFIG.admin.cos_region,Key:oldKey},(e,d)=>e?rej(e):res(d))});
       DATA.photos[i].file='/'+newKey;moved++;editLog(`✓ ${fileName}`,'ok');
-    }catch(e){editLog(`✗ ${fileName}: ${e.message}（原文件未删除）`,'err')}
+    }catch(e){editLog(`✗ ${fileName}: ${e.message}`,'err')}
   }
   if(moved>0)DATA._dirty=true;
-  editLog(`结果: ${moved}/${selectedIndices.size} 成功`,'info');renderEditList();
+  editLog(`结果: ${moved}/${selectedIndices.size}`,'info');renderManageList();
 }
 
 async function movePhoto(i){
   if(!COS_CLIENT){editLog('请先保存凭证','err');return}
   const folder=document.getElementById('moveSel-'+i).value,p=DATA.photos[i],oldKey=p.file.replace(/^\//,''),fileName=oldKey.split('/').pop(),newKey=folder+fileName;
-  if(!confirm(`确认移动？\n\n「${p.title}」\n${oldKey}\n  ↓\n${newKey}`))return;
+  if(!confirm(`确认移动？\n\n${oldKey}\n  ↓\n${newKey}`))return;
   editLog(`移动: ${oldKey} → ${newKey}`,'info');
   try{
     await new Promise((res,rej)=>{COS_CLIENT.putObjectCopy({Bucket:CONFIG.admin.cos_bucket,Region:CONFIG.admin.cos_region,Key:newKey,CopySource:`${CONFIG.admin.cos_bucket}.cos.${CONFIG.admin.cos_region}.myqcloud.com/${oldKey}`},(e,d)=>e?rej(e):res(d))});
-    await cosHeadObject(newKey);editLog('✓ 新文件已确认','ok');
+    await cosHeadObject(newKey);
     await new Promise((res,rej)=>{COS_CLIENT.deleteObject({Bucket:CONFIG.admin.cos_bucket,Region:CONFIG.admin.cos_region,Key:oldKey},(e,d)=>e?rej(e):res(d))});
-    DATA.photos[i].file='/'+newKey;DATA._dirty=true;editLog('✓ 移动成功','ok');renderEditList();
-  }catch(e){editLog(`✗ 失败: ${e.message}（原文件未删除）`,'err')}
+    DATA.photos[i].file='/'+newKey;DATA._dirty=true;editLog('✓ 移动成功','ok');renderManageList();
+  }catch(e){editLog(`✗ ${e.message}`,'err')}
 }
 
 async function batchDelete(){
   if(!selectedIndices.size)return;
-  if(!COS_CLIENT){editLog('请先保存 COS 凭证','err');return}
+  if(!COS_CLIENT){editLog('请先保存凭证','err');return}
   const items=[...selectedIndices].map(i=>({idx:i,title:DATA.photos[i].title,file:DATA.photos[i].file}));
-  if(!confirm(`确定删除 ${items.length} 张照片？\n\n⚠️ 将同时删除 COS 存储桶中的文件！\n\n${items.slice(0,8).map(x=>x.title).join('\n')}${items.length>8?'\n...等 '+items.length+' 张':''}`))return;
-
-  editLog(`批量删除 ${items.length} 张...`,'info');
-  let deleted=0;
-  // 从后往前删，避免索引错位
+  if(!confirm(`确定删除 ${items.length} 张？\n\n⚠️ 同时删除 COS 中的文件\n\n${items.slice(0,8).map(x=>x.title).join('\n')}`))return;
+  editLog(`批量删除 ${items.length} 张...`,'info');let deleted=0;
   const sorted=items.sort((a,b)=>b.idx-a.idx);
   for(const item of sorted){
     const cosKey=item.file.replace(/^\//,'');
     try{
       await new Promise((res,rej)=>{COS_CLIENT.deleteObject({Bucket:CONFIG.admin.cos_bucket,Region:CONFIG.admin.cos_region,Key:cosKey},(e,d)=>e?rej(e):res(d))});
-      DATA.photos.splice(item.idx,1);
-      deleted++;
-      editLog(`✓ 已删除: ${item.title}`,'ok');
-    }catch(e){
-      editLog(`✗ COS 删除失败: ${item.title} (${e.message})，已从列表移除`,'err');
-      DATA.photos.splice(item.idx,1); // 即使 COS 删失败也从列表移除
-    }
+      DATA.photos.splice(item.idx,1);deleted++;editLog(`✓ ${item.title}`,'ok');
+    }catch(e){editLog(`✗ COS 删除失败，仍移除: ${item.title}`,'err');DATA.photos.splice(item.idx,1)}
   }
-  DATA._dirty=true;
-  editLog(`删除完成: ${deleted}/${items.length} 个 COS 文件已清除，发布后生效`,'info');
-  renderEditList();
+  DATA._dirty=true;currentDetailIndex=-1;
+  editLog(`删除完成: ${deleted}/${items.length}`,'info');renderManageList();
 }
 
 async function delPhoto(i){
-  if(!COS_CLIENT){editLog('请先保存 COS 凭证','err');return}
+  if(!COS_CLIENT){editLog('请先保存凭证','err');return}
   const p=DATA.photos[i];
-  if(!confirm(`确定删除「${p.title}」？\n\n⚠️ 将同时删除 COS 存储桶中的文件：\n${p.file}`))return;
-
+  if(!confirm(`确定删除「${p.title}」？\n\n⚠️ 同时删除 COS 文件`))return;
   const cosKey=p.file.replace(/^\//,'');
-  editLog(`删除 COS 文件: ${cosKey}`,'info');
-  try{
-    await new Promise((res,rej)=>{COS_CLIENT.deleteObject({Bucket:CONFIG.admin.cos_bucket,Region:CONFIG.admin.cos_region,Key:cosKey},(e,d)=>e?rej(e):res(d))});
-    editLog(`✓ COS 文件已删除`,'ok');
-  }catch(e){
-    editLog(`✗ COS 删除失败: ${e.message}，仍从列表移除`,'err');
-  }
-  DATA.photos.splice(i,1);
-  DATA._dirty=true;
-  editLog('✓ 已从列表移除，发布后生效','ok');
-  renderEditList();
+  try{await new Promise((res,rej)=>{COS_CLIENT.deleteObject({Bucket:CONFIG.admin.cos_bucket,Region:CONFIG.admin.cos_region,Key:cosKey},(e,d)=>e?rej(e):res(d))});editLog('✓ COS 已删除','ok')}
+  catch(e){editLog('✗ COS 删除失败，仍移除','err')}
+  DATA.photos.splice(i,1);DATA._dirty=true;currentDetailIndex=-1;renderManageList();
 }
 
 /* ═══════════════════════════════════════
-   ORPHAN SCANNER (未收录照片)
+   SETTINGS TAB
    ═══════════════════════════════════════ */
-function toggleOrphanSection(){
-  document.getElementById('orphanBody').classList.toggle('collapsed');
-  document.getElementById('orphanToggle').classList.toggle('collapsed');
+function initSettingsTab(){
+  const w=CONFIG.watermark||{text:'',fontsize:16,opacity:35,position:'southeast',color:'I2ZmZmZmZmY='};
+  document.getElementById('wmText').value=w.text||'';
+  document.getElementById('wmSize').value=w.fontsize||16;
+  document.getElementById('wmOpacity').value=w.opacity||35;
+  document.getElementById('wmPosition').value=w.position||'southeast';
+  document.getElementById('wmColor').value=w.color||'I2ZmZmZmZmY=';
+  previewWatermark();
+
+  // About
+  const a=CONFIG.about||{};
+  document.getElementById('aboutName').value=a.name||'';
+  document.getElementById('aboutAvatar').value=a.avatar||'';
+  document.getElementById('aboutBio').value=(a.bio||[]).join('\n');
+  renderAboutStats();renderAboutContacts();
 }
 
-async function scanOrphans(){
-  if(!COS_CLIENT){editLog('请先保存 COS 凭证','err');return}
-  const btn=document.getElementById('scanBtn');
-  btn.textContent='扫描中...';btn.disabled=true;
-  editLog('扫描 COS 存储桶中的所有图片文件...','info');
+function previewWatermark(){
+  const box=document.getElementById('wmPreview');
+  // Find first 风光 photo
+  const photo=DATA.photos.find(p=>getCat(p)==='风光')||DATA.photos[0];
+  if(!photo){box.innerHTML='<div class="wm-empty">还没有照片，无法预览</div>';return}
 
+  const text=document.getElementById('wmText').value;
+  const size=document.getElementById('wmSize').value||16;
+  const opacity=document.getElementById('wmOpacity').value||35;
+  const position=document.getElementById('wmPosition').value||'southeast';
+  const color=document.getElementById('wmColor').value||'I2ZmZmZmZmY=';
+
+  if(!text){box.innerHTML=`<img src="${CONFIG.cos_base}${photo.file}?imageMogr2/thumbnail/800x">`;return}
+  const t=btoa(unescape(encodeURIComponent(text)));
+  const wmParam=`watermark/2/text/${t}/fontsize/${size}/fill/${color}/dissolve/${opacity}/gravity/${position}/dx/15/dy/15`;
+  box.innerHTML=`<img src="${CONFIG.cos_base}${photo.file}?imageMogr2/thumbnail/800x|${wmParam}">`;
+}
+
+function saveWatermark(){
+  CONFIG.watermark={
+    text:document.getElementById('wmText').value,
+    fontsize:parseInt(document.getElementById('wmSize').value)||16,
+    opacity:parseInt(document.getElementById('wmOpacity').value)||35,
+    position:document.getElementById('wmPosition').value,
+    color:document.getElementById('wmColor').value
+  };
+  configDirty=true;
+  settingsLog('✓ 水印设置已保存到本地，点发布推送到网站','ok');
+}
+
+/* About */
+function dirtyConfig(){configDirty=true}
+
+function renderAboutStats(){
+  const el=document.getElementById('aboutStats');
+  const stats=CONFIG.about?.stats||[];
+  el.innerHTML=stats.map((s,i)=>`<div class="row" style="margin-bottom:.3rem">
+    <div class="field" style="min-width:100px"><input value="${esc(s.value)}" onchange="updStat(${i},'value',this.value)" placeholder="数值"></div>
+    <div class="field"><input value="${esc(s.label)}" onchange="updStat(${i},'label',this.value)" placeholder="标签"></div>
+    <button class="btn btn-sm btn-danger" onclick="delStat(${i})">✕</button>
+  </div>`).join('')+`<button class="btn btn-sm" onclick="addStat()">+ 添加统计项</button>`;
+}
+function updStat(i,k,v){CONFIG.about.stats[i][k]=v;configDirty=true}
+function delStat(i){CONFIG.about.stats.splice(i,1);configDirty=true;renderAboutStats()}
+function addStat(){if(!CONFIG.about.stats)CONFIG.about.stats=[];CONFIG.about.stats.push({value:'',label:''});configDirty=true;renderAboutStats()}
+
+function renderAboutContacts(){
+  const el=document.getElementById('aboutContacts');
+  const cts=CONFIG.contact||[];
+  el.innerHTML=cts.map((c,i)=>`<div class="row" style="margin-bottom:.3rem">
+    <div class="field" style="min-width:60px;flex:.3"><input value="${esc(c.icon)}" onchange="updCt(${i},'icon',this.value)" placeholder="图标"></div>
+    <div class="field" style="flex:1.5"><input value="${esc(c.text)}" onchange="updCt(${i},'text',this.value)" placeholder="显示文字"></div>
+    <div class="field" style="flex:1.5"><input value="${esc(c.link)}" onchange="updCt(${i},'link',this.value)" placeholder="链接 (可选)"></div>
+    <button class="btn btn-sm btn-danger" onclick="delCt(${i})">✕</button>
+  </div>`).join('')+`<button class="btn btn-sm" onclick="addCt()">+ 添加联系方式</button>`;
+}
+function updCt(i,k,v){CONFIG.contact[i][k]=v;configDirty=true}
+function delCt(i){CONFIG.contact.splice(i,1);configDirty=true;renderAboutContacts()}
+function addCt(){if(!CONFIG.contact)CONFIG.contact=[];CONFIG.contact.push({icon:'',text:'',link:''});configDirty=true;renderAboutContacts()}
+
+function saveAbout(){
+  if(!CONFIG.about)CONFIG.about={};
+  CONFIG.about.name=document.getElementById('aboutName').value;
+  CONFIG.about.avatar=document.getElementById('aboutAvatar').value;
+  CONFIG.about.bio=document.getElementById('aboutBio').value.split('\n').filter(x=>x.trim());
+  configDirty=true;
+  settingsLog('✓ 关于信息已保存，点发布推送到网站','ok');
+}
+
+/* Backup */
+async function backupData(){
+  if(!COS_CLIENT){settingsLog('请先保存凭证','err');return}
+  const d=new Date(),pad=n=>String(n).padStart(2,'0');
+  const ts=`${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}_${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`;
+  const key=`backup/databackup_${ts}.json`;
+  settingsLog(`备份: ${key}`,'info');
+  try{
+    await new Promise((res,rej)=>{COS_CLIENT.putObject({Bucket:CONFIG.admin.cos_bucket,Region:CONFIG.admin.cos_region,Key:key,Body:JSON.stringify({photos:DATA.photos},null,2),ContentType:'application/json'},(e,d)=>e?rej(e):res(d))});
+    settingsLog(`✓ 备份成功: ${key}`,'ok');
+  }catch(e){settingsLog(`✗ 备份失败: ${e.message}`,'err')}
+}
+
+async function listBackups(){
+  if(!COS_CLIENT){settingsLog('请先保存凭证','err');return}
+  try{
+    const data=await cosList('backup/','');
+    const backups=(data.Contents||[]).filter(f=>f.Key.includes('databackup_')).sort((a,b)=>b.Key.localeCompare(a.Key));
+    const el=document.getElementById('backupList');
+    if(!backups.length){el.innerHTML='<p class="hint">暂无备份</p>';return}
+    el.innerHTML='<h3>已有备份（最新在前）</h3>'+backups.map(b=>{
+      const size=fmtSize(parseInt(b.Size));
+      return`<div style="display:flex;gap:.5rem;align-items:center;padding:.4rem 0;border-bottom:1px solid var(--border)">
+        <span style="flex:1;font-family:var(--mono);font-size:.8rem">${b.Key}</span>
+        <span style="font-size:.72rem;color:var(--muted)">${size}</span>
+        <button class="btn btn-sm" onclick="restoreBackup('${b.Key}')">恢复</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteBackup('${b.Key}')">删除</button>
+      </div>`;
+    }).join('');
+  }catch(e){settingsLog(`✗ 列出备份失败: ${e.message}`,'err')}
+}
+
+async function restoreBackup(key){
+  if(!confirm(`确定用此备份恢复 data.json？\n\n${key}\n\n⚠️ 当前未发布的改动将丢失！`))return;
+  settingsLog(`恢复: ${key}`,'info');
+  try{
+    const url=CONFIG.cos_base+'/'+key;
+    const res=await fetch(url);
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const restored=await res.json();
+    if(!restored.photos)throw new Error('格式错误');
+    DATA.photos=restored.photos;DATA._dirty=true;
+    settingsLog(`✓ 已恢复 ${restored.photos.length} 张。点发布生效。`,'ok');
+    document.getElementById('editCount').textContent=`(${DATA.photos.length})`;
+  }catch(e){settingsLog(`✗ 恢复失败: ${e.message}`,'err')}
+}
+
+async function deleteBackup(key){
+  if(!confirm(`删除备份 ${key}？`))return;
+  try{await new Promise((res,rej)=>{COS_CLIENT.deleteObject({Bucket:CONFIG.admin.cos_bucket,Region:CONFIG.admin.cos_region,Key:key},(e,d)=>e?rej(e):res(d))});settingsLog(`✓ 已删除`,'ok');listBackups()}
+  catch(e){settingsLog(`✗ ${e.message}`,'err')}
+}
+
+/* Init all dates from EXIF */
+async function initAllDates(){
+  if(!COS_CLIENT){settingsLog('请先保存凭证','err');return}
+  const overwrite=document.getElementById('initOverwrite').checked;
+  const targets=overwrite?DATA.photos:DATA.photos.filter(p=>!p.date);
+  if(!targets.length){settingsLog('所有照片都已有 date','info');return}
+  if(!confirm(`将从 EXIF 读取 ${targets.length} 张照片的日期。\n\n每张消耗一次付费 EXIF 请求，确认继续？`))return;
+
+  const btn=document.getElementById('initDateBtn');btn.disabled=true;btn.textContent='扫描中...';
+  const prog=document.getElementById('initProgress'),bar=document.getElementById('initProgressBar'),label=document.getElementById('initProgressLabel');
+  prog.classList.remove('hidden');bar.style.width='0%';
+  settingsLog(`开始扫描 ${targets.length} 张...`,'info');
+
+  let done=0,updated=0;
+  for(const p of targets){
+    try{
+      const exif=await fetchExif(p.file);
+      if(exif){
+        p.exif=exif;
+        if(exif.datetime){const ym=exifDateToYM(exif.datetime);if(ym){p.date=ym;updated++}}
+      }else{p.exif=false}
+    }catch(e){settingsLog(`✗ ${p.title}: ${e.message}`,'err')}
+    done++;
+    bar.style.width=(done/targets.length*100)+'%';
+    label.textContent=`${done} / ${targets.length} (已更新 ${updated})`;
+  }
+  DATA._dirty=true;
+  settingsLog(`✓ 完成: 扫描 ${done} 张，更新 ${updated} 张日期`,'ok');
+  btn.disabled=false;btn.textContent='开始扫描';
+}
+
+/* ═══════════════════════════════════════
+   ORPHAN SCANNER
+   ═══════════════════════════════════════ */
+function toggleOrphanSection(){document.getElementById('orphanBody').classList.toggle('collapsed');document.getElementById('orphanToggle').classList.toggle('collapsed')}
+
+async function scanOrphans(){
+  if(!COS_CLIENT){editLog('请先保存凭证','err');return}
+  const btn=document.getElementById('scanBtn');btn.textContent='扫描中...';btn.disabled=true;
+  editLog('扫描存储桶...','info');
   try{
     const allFiles=await listAllFiles('');
     const imageExts=['.jpg','.jpeg','.png','.gif','.webp','.bmp'];
-    const ignoreFiles=new Set(['photo/ZX_self.JPG']); // 忽略的文件
+    const ignoreFiles=new Set(['photo/ZX_self.JPG']);
     const imageFiles=allFiles.filter(f=>{
       const lower=f.Key.toLowerCase();
-      return imageExts.some(ext=>lower.endsWith(ext)) && !ignoreFiles.has(f.Key);
+      return imageExts.some(ext=>lower.endsWith(ext))&&!ignoreFiles.has(f.Key)&&!f.Key.startsWith('backup/');
     });
+    const tracked=new Set(DATA.photos.map(p=>p.file.replace(/^\//,'')));
+    orphanFiles=imageFiles.filter(f=>!tracked.has(f.Key)).map(f=>({key:f.Key,size:parseInt(f.Size)||0,title:f.Key.split('/').pop().replace(/\.[^.]+$/,''),location:'',date:'',tags:'',notes:'',wide:false,tall:false}));
 
-    // Compare with data.json
-    const trackedPaths=new Set(DATA.photos.map(p=>p.file.replace(/^\//,'')));
-    orphanFiles=imageFiles.filter(f=>!trackedPaths.has(f.Key)).map(f=>({
-      key:f.Key,
-      size:parseInt(f.Size)||0,
-      lastModified:f.LastModified,
-      // Pre-fill editable fields
-      title:f.Key.split('/').pop().replace(/\.[^.]+$/,''),
-      category:CONFIG.categories[0]||'',
-      location:'',
-      date:new Date().getFullYear().toString(),
-      tags:'',
-      notes:'',
-      wide:false,
-      tall:false
-    }));
-
-    // Auto-detect orientation for orphans
-    for(const o of orphanFiles){
-      try{
-        const url=CONFIG.cos_base+'/'+o.key+'?imageMogr2/thumbnail/10x';
-        // We use imageInfo API instead of loading full image
-        const infoUrl=CONFIG.cos_base+'/'+o.key+'?imageInfo';
-        const res=await fetch(infoUrl);
-        if(res.ok){
-          const info=await res.json();
-          const w=parseInt(info.width),h=parseInt(info.height);
-          if(w&&h){const r=w/h;if(r>=1.8)o.wide=true;else if(r<=0.75)o.tall=true}
-        }
-      }catch(e){}
-    }
-
-    const stats=document.getElementById('scanStats');
-    stats.classList.remove('hidden');
-    stats.innerHTML=`COS 中共 <strong>${imageFiles.length}</strong> 张图片，其中 <strong>${orphanFiles.length}</strong> 张未收录到网站。`;
-
-    orphanSelected.clear();orphanExpanded=-1;
-    document.getElementById('orphanToolbar').classList.toggle('hidden',orphanFiles.length===0);
-    renderOrphans();
-    editLog(`扫描完成: ${orphanFiles.length} 张未收录`,'ok');
-  }catch(e){
-    editLog('扫描失败: '+e.message,'err');
-  }
+    const stats=document.getElementById('scanStats');stats.classList.remove('hidden');
+    stats.innerHTML=`COS 共 <strong>${imageFiles.length}</strong> 张，未收录 <strong>${orphanFiles.length}</strong> 张。`;
+    document.getElementById('orphanToolbar').classList.toggle('hidden',!orphanFiles.length);
+    renderOrphans();editLog(`✓ ${orphanFiles.length} 张未收录`,'ok');
+  }catch(e){editLog(`扫描失败: ${e.message}`,'err')}
   btn.textContent='重新扫描';btn.disabled=false;
 }
 
 async function listAllFiles(marker){
-  const result=[];
-  let m=marker;
-  do{
-    const data=await new Promise((res,rej)=>{
-      COS_CLIENT.getBucket({
-        Bucket:CONFIG.admin.cos_bucket,Region:CONFIG.admin.cos_region,
-        MaxKeys:1000,Marker:m
-      },(err,d)=>err?rej(err):res(d));
-    });
-    result.push(...(data.Contents||[]));
-    m=data.IsTruncated==='true'?data.NextMarker:'';
-  }while(m);
+  const result=[];let m=marker;
+  do{const data=await new Promise((res,rej)=>{COS_CLIENT.getBucket({Bucket:CONFIG.admin.cos_bucket,Region:CONFIG.admin.cos_region,MaxKeys:1000,Marker:m},(err,d)=>err?rej(err):res(d))});
+    result.push(...(data.Contents||[]));m=data.IsTruncated==='true'?data.NextMarker:''}while(m);
   return result;
 }
 
 function renderOrphans(){
   const el=document.getElementById('orphanList');
   if(!orphanFiles.length){el.innerHTML='<p class="hint">没有未收录的照片。</p>';return}
-  document.getElementById('orphanSelectAll').checked=false;
-  updateOrphanSelCount();
-
-  el.innerHTML=orphanFiles.map((o,i)=>`
-    <div class="orphan-item" id="oi-${i}">
-      <div class="orphan-header">
-        <div class="o-check" onclick="event.stopPropagation()"><input type="checkbox" onchange="toggleOrphanSel(${i},this.checked)"></div>
-        <img class="o-thumb" src="${CONFIG.cos_base}/${o.key}?imageMogr2/thumbnail/140x" onerror="this.style.opacity='.2'" onclick="toggleOrphanExpand(${i})">
-        <div class="o-path" onclick="toggleOrphanExpand(${i})">${o.key}</div>
-        <div class="o-size">${fmtSize(o.size)}</div>
-        <div class="o-actions">
-          <button class="btn btn-sm" style="border-color:var(--green);color:var(--green)" onclick="addOrphan(${i})">添加</button>
-          <button class="btn btn-sm" onclick="toggleOrphanExpand(${i})">编辑</button>
-        </div>
-      </div>
-      <div class="orphan-edit" id="oe-${i}"></div>
+  document.getElementById('orphanSelectAll').checked=false;updateOrphanSelCount();
+  el.innerHTML=orphanFiles.map((o,i)=>`<div class="orphan-item"><div class="orphan-header">
+    <div class="o-check" onclick="event.stopPropagation()"><input type="checkbox" onchange="toggleOrphanSel(${i},this.checked)"></div>
+    <img class="o-thumb" src="${CONFIG.cos_base}/${o.key}?imageMogr2/thumbnail/140x" onerror="this.style.opacity='.2'">
+    <div class="o-path">${o.key}</div>
+    <div class="o-size">${fmtSize(o.size)}</div>
+    <div class="o-actions">
+      <button class="btn btn-sm" style="border-color:var(--green);color:var(--green)" onclick="addOrphan(${i})">添加</button>
     </div>
-  `).join('');
+  </div></div>`).join('');
 }
-
-function toggleOrphanExpand(i){
-  if(orphanExpanded>=0&&orphanExpanded!==i){
-    const old=document.getElementById('oe-'+orphanExpanded);
-    if(old){old.classList.remove('open');old.innerHTML=''}
-  }
-  const panel=document.getElementById('oe-'+i);
-  if(orphanExpanded===i){panel.classList.remove('open');panel.innerHTML='';orphanExpanded=-1;return}
-  orphanExpanded=i;
-  const o=orphanFiles[i];
-  const catOpts=CONFIG.categories.map(c=>`<option value="${c}"${c===o.category?' selected':''}>${c}</option>`).join('');
-  panel.innerHTML=`<div class="orphan-edit-inner">
-    <div class="oe-preview"><img src="${CONFIG.cos_base}/${o.key}?imageMogr2/thumbnail/360x" onerror="this.style.opacity='.3'"></div>
-    <div class="ep-fields">
-      <div class="row"><div class="field"><label>标题</label><input value="${esc(o.title)}" onchange="orphanUpd(${i},'title',this.value)"></div></div>
-      <div class="row"><div class="field"><label>分类</label><select onchange="orphanUpd(${i},'category',this.value)">${catOpts}</select></div><div class="field"><label>地点</label><input value="${esc(o.location)}" onchange="orphanUpd(${i},'location',this.value)"></div><div class="field"><label>年份</label><input value="${esc(o.date)}" onchange="orphanUpd(${i},'date',this.value)"></div></div>
-      <div class="row"><div class="field"><label>标签（逗号分隔）</label><input value="${esc(o.tags)}" onchange="orphanUpd(${i},'tags',this.value)"></div></div>
-      <div class="row"><div class="field"><label>拍摄手记</label><textarea rows="2" onchange="orphanUpd(${i},'notes',this.value)">${esc(o.notes)}</textarea></div></div>
-      <div class="row">
-        <label class="check"><input type="checkbox" ${o.wide?'checked':''} onchange="orphanUpd(${i},'wide',this.checked)"> 宽幅</label>
-        <label class="check"><input type="checkbox" ${o.tall?'checked':''} onchange="orphanUpd(${i},'tall',this.checked)"> 竖版</label>
-        ${o.wide||o.tall?'<span style="font-size:.68rem;color:var(--blue)">(自动识别)</span>':''}
-      </div>
-      <div style="margin-top:.5rem"><button class="btn btn-sm" style="border-color:var(--green);color:var(--green)" onclick="addOrphan(${i})">✓ 添加到网站</button></div>
-    </div>
-  </div>`;
-  panel.classList.add('open');
-}
-
-function orphanUpd(i,k,v){orphanFiles[i][k]=v}
 
 async function addOrphan(i){
   const o=orphanFiles[i];
-  const entry={
-    file:'/'+o.key,
-    title:o.title,
-    category:o.category,
-    location:o.location,
-    date:o.date,
-    tags:o.tags?o.tags.split(/[,，]/).map(t=>t.trim()).filter(Boolean):[],
-    notes:o.notes||''
-  };
-  if(o.wide)entry.wide=true;
-  if(o.tall)entry.tall=true;
+  const entry={file:'/'+o.key,title:o.title,location:'',date:'',tags:[],notes:''};
   editLog(`读取 EXIF: ${o.title}...`,'info');
-  await enrichWithExif(entry);
-  if(entry.exif&&entry.exif.model)editLog(`  ${entry.exif.model} ${entry.exif.aperture}`,'ok');
-  DATA.photos.unshift(entry);
-  DATA._dirty=true;
-  orphanFiles.splice(i,1);
-  orphanSelected.delete(i);
-  editLog(`✓ 已添加「${entry.title}」，发布后生效`,'ok');
+  const exif=await fetchExif(entry.file);entry.exif=exif||false;
+  if(exif&&exif.datetime){const ym=exifDateToYM(exif.datetime);if(ym)entry.date=ym}
+  DATA.photos.unshift(entry);DATA._dirty=true;
+  orphanFiles.splice(i,1);orphanSelected.delete(i);
+  editLog(`✓ 已添加「${entry.title}」`,'ok');
   document.getElementById('scanStats').innerHTML=`剩余 <strong>${orphanFiles.length}</strong> 张未收录。`;
   document.getElementById('editCount').textContent=`(${DATA.photos.length})`;
-  orphanExpanded=-1;
   renderOrphans();
 }
 
-/* Orphan batch operations */
 function toggleOrphanSel(i,checked){if(checked)orphanSelected.add(i);else orphanSelected.delete(i);updateOrphanSelCount()}
 function toggleOrphanSelectAll(checked){document.querySelectorAll('.o-check input').forEach((b,idx)=>{b.checked=checked;if(checked)orphanSelected.add(idx);else orphanSelected.delete(idx)});updateOrphanSelCount()}
 function updateOrphanSelCount(){document.getElementById('orphanSelCount').textContent=`已选 ${orphanSelected.size} 张`}
 
 async function batchAddOrphans(){
-  if(!orphanSelected.size){editLog('请先勾选照片','err');return}
-  if(!confirm(`确认添加 ${orphanSelected.size} 张照片到网站？`))return;
-  const sorted=[...orphanSelected].sort((a,b)=>b-a);
-  let added=0;
-  editLog(`读取 EXIF (${sorted.length} 张)...`,'info');
+  if(!orphanSelected.size){editLog('请先勾选','err');return}
+  if(!confirm(`确认添加 ${orphanSelected.size} 张？（每张消耗一次 EXIF 请求）`))return;
+  const sorted=[...orphanSelected].sort((a,b)=>b-a);let added=0;
+  editLog(`批量添加 ${sorted.length} 张...`,'info');
   for(const i of sorted){
     const o=orphanFiles[i];
-    const entry={file:'/'+o.key,title:o.title,category:o.category,location:o.location,date:o.date,
-      tags:o.tags?o.tags.split(/[,，]/).map(t=>t.trim()).filter(Boolean):[],notes:o.notes||''};
-    if(o.wide)entry.wide=true;if(o.tall)entry.tall=true;
-    await enrichWithExif(entry);
-    DATA.photos.unshift(entry);
-    orphanFiles.splice(i,1);
-    added++;
+    const entry={file:'/'+o.key,title:o.title,location:'',date:'',tags:[],notes:''};
+    const exif=await fetchExif(entry.file);entry.exif=exif||false;
+    if(exif&&exif.datetime){const ym=exifDateToYM(exif.datetime);if(ym)entry.date=ym}
+    DATA.photos.unshift(entry);orphanFiles.splice(i,1);added++;
   }
-  DATA._dirty=true;
-  orphanSelected.clear();orphanExpanded=-1;
-  editLog(`✓ 已添加 ${added} 张，发布后生效`,'ok');
+  DATA._dirty=true;orphanSelected.clear();
+  editLog(`✓ 已添加 ${added} 张`,'ok');
   document.getElementById('scanStats').innerHTML=`剩余 <strong>${orphanFiles.length}</strong> 张未收录。`;
   document.getElementById('editCount').textContent=`(${DATA.photos.length})`;
   renderOrphans();
@@ -860,128 +1005,18 @@ async function batchAddOrphans(){
 
 async function batchDeleteOrphans(){
   if(!orphanSelected.size){editLog('请先勾选','err');return}
-  if(!COS_CLIENT){editLog('请先保存凭证','err');return}
   const names=[...orphanSelected].map(i=>orphanFiles[i].key.split('/').pop());
-  if(!confirm(`⚠️ 确定从 COS 永久删除 ${names.length} 张照片？\n\n${names.slice(0,8).join('\n')}${names.length>8?'\n...等 '+names.length+' 张':''}\n\n此操作不可恢复！`))return;
-
+  if(!confirm(`⚠️ 永久删除 ${names.length} 张 COS 文件？不可恢复！`))return;
   editLog(`删除 ${orphanSelected.size} 张...`,'info');
-  const sorted=[...orphanSelected].sort((a,b)=>b-a);
-  let deleted=0;
+  const sorted=[...orphanSelected].sort((a,b)=>b-a);let deleted=0;
   for(const i of sorted){
-    try{
-      await new Promise((res,rej)=>{COS_CLIENT.deleteObject({Bucket:CONFIG.admin.cos_bucket,Region:CONFIG.admin.cos_region,Key:orphanFiles[i].key},(e,d)=>e?rej(e):res(d))});
-      editLog(`✓ 已删除: ${orphanFiles[i].key.split('/').pop()}`,'ok');
-      orphanFiles.splice(i,1);deleted++;
-    }catch(e){editLog(`✗ ${orphanFiles[i].key}: ${e.message}`,'err')}
+    try{await new Promise((res,rej)=>{COS_CLIENT.deleteObject({Bucket:CONFIG.admin.cos_bucket,Region:CONFIG.admin.cos_region,Key:orphanFiles[i].key},(e,d)=>e?rej(e):res(d))});
+      orphanFiles.splice(i,1);deleted++;editLog(`✓`,'ok')}
+    catch(e){editLog(`✗ ${e.message}`,'err')}
   }
-  orphanSelected.clear();orphanExpanded=-1;
-  editLog(`删除完成: ${deleted} 张`,'info');
+  orphanSelected.clear();editLog(`完成: ${deleted}`,'info');
   document.getElementById('scanStats').innerHTML=`剩余 <strong>${orphanFiles.length}</strong> 张未收录。`;
   renderOrphans();
-}
-
-/* ═══ EXIF 获取（优先本地读，COS 接口备用） ═══ */
-
-/* 分数字符串转数字 "13/1" → 13, "1/200" → 0.005 */
-function frac2num(s){
-  if(typeof s!=='string'||!s.includes('/'))return parseFloat(s)||0;
-  const[a,b]=s.split('/').map(Number);
-  return b?a/b:0;
-}
-
-/* 格式化快门速度 */
-function fmtShutter(s){
-  if(s===null||s===undefined||s==='')return '';
-  let val;
-  if(typeof s==='string'&&s.includes('/')){
-    const[a,b]=s.split('/').map(Number);
-    if(b===0)return '';
-    if(a>=b)return(a/b)+'s';
-    return `${a}/${b}s`;
-  }
-  val=parseFloat(s);
-  if(isNaN(val))return '';
-  if(val>=1)return val+'s';
-  return `1/${Math.round(1/val)}s`;
-}
-
-/* 统一化 EXIF 数据（兼容 exifr 本地 & COS 远程两种源） */
-function normalizeExif(raw,source){
-  if(!raw)return false;
-  let make,model,fnum,shutter,iso,focal,datetime;
-
-  if(source==='local'){
-    // exifr output
-    make=raw.Make||'';model=raw.Model||'';
-    fnum=raw.FNumber;shutter=raw.ExposureTime;
-    iso=raw.ISO||raw.ISOSpeedRatings;focal=raw.FocalLength;
-    datetime=raw.DateTimeOriginal||raw.DateTime;
-    if(datetime instanceof Date){
-      const p=n=>String(n).padStart(2,'0');
-      datetime=`${datetime.getFullYear()}:${p(datetime.getMonth()+1)}:${p(datetime.getDate())} ${p(datetime.getHours())}:${p(datetime.getMinutes())}:${p(datetime.getSeconds())}`;
-    }
-  }else{
-    // COS {"FNumber":{"val":"13/1"},...}
-    const g=k=>raw[k]?.val||'';
-    make=g('Make');model=g('Model');
-    fnum=g('FNumber')?frac2num(g('FNumber')):0;
-    shutter=g('ExposureTime');
-    iso=g('ISOSpeedRatings')||g('ISO');
-    focal=g('FocalLength')?frac2num(g('FocalLength')):0;
-    datetime=g('DateTimeOriginal')||g('DateTime')||'';
-  }
-
-  return{
-    make:String(make||'').replace(/\s*CORPORATION\s*/i,'').trim(),
-    model:String(model||'').trim(),
-    aperture:fnum?`f/${Math.round(fnum*10)/10}`:'',
-    shutter:fmtShutter(shutter),
-    iso:iso?String(iso):'',
-    focal:focal?`${Math.round(focal)}mm`:'',
-    datetime:datetime||''
-  };
-}
-
-/* 从本地 File 对象读 EXIF（首选，上传前使用） */
-async function readExifFromFile(file){
-  if(typeof exifr==='undefined'){console.error('exifr not loaded');return false}
-  try{
-    const raw=await exifr.parse(file,{
-      pick:['Make','Model','FNumber','ExposureTime','ISO','ISOSpeedRatings','FocalLength','DateTimeOriginal','DateTime']
-    });
-    if(!raw)return false;
-    return normalizeExif(raw,'local');
-  }catch(e){console.error('exifr error:',e);return false}
-}
-
-/* 从 COS 读 EXIF（备用，已存在的文件） */
-async function fetchExif(fileKey){
-  const url=CONFIG.cos_base+'/'+fileKey.replace(/^\//,'')+'?exif';
-  try{
-    const res=await fetch(url);
-    if(!res.ok){console.warn('EXIF http',res.status);return false}
-    const d=await res.json();
-    if(!d||d.error){console.log('No EXIF:',d?.error||'empty');return false}
-    return normalizeExif(d,'remote');
-  }catch(e){console.error('COS exif fetch failed:',e);return false}
-}
-
-/* 从 EXIF datetime 提取年月: "2024:06:15 14:30:00" → "2024-06" */
-function exifDateToYM(dt){
-  if(!dt)return '';
-  const m=String(dt).match(/^(\d{4})[:\-](\d{2})/);
-  return m?`${m[1]}-${m[2]}`:'';
-}
-
-/* 为已上传 entry 补充 EXIF（如果还没有） - 用于未收录/已有照片 */
-async function enrichWithExif(entry){
-  if(entry.exif!==undefined)return;
-  const exif=await fetchExif(entry.file);
-  entry.exif=exif||false;
-  if(exif&&exif.datetime){
-    const ym=exifDateToYM(exif.datetime);
-    if(ym&&!entry.date)entry.date=ym;
-  }
 }
 
 /* ═══ PUBLISH ═══ */
@@ -995,57 +1030,60 @@ async function publish(){
 
   const pending=queue.filter(q=>q.status==='pending'),successEntries=[];
   for(const item of pending){
-    // STEP 1: Read EXIF from original file (before compression loses it)
     let exif=false;
-    try{
-      exif=await readExifFromFile(item.file);
-      if(exif&&exif.model)log(`📷 ${item.file.name}: ${exif.model} ${exif.aperture} ${exif.shutter}`,'ok');
-      else log(`  ${item.file.name}: 无 EXIF 数据`,'info');
-    }catch(e){log(`EXIF 读取失败: ${e.message}`,'info')}
+    try{exif=await readExifFromFile(item.file);if(exif&&exif.model)log(`📷 ${item.file.name}: ${exif.model} ${exif.aperture} ${exif.shutter}`,'ok');else log(`  ${item.file.name}: 无 EXIF`,'info')}
+    catch(e){log(`EXIF 读取: ${e.message}`,'info')}
 
-    // STEP 2: Compress
     setQS(item.id,'compressing');log(`压缩: ${item.file.name}`,'info');
     let blob;try{blob=await compressImage(item.file,uploadMaxWidth,uploadQuality);item.compressedSize=blob.size;log(`${fmtSize(item.origSize)} → ${fmtSize(blob.size)}`,'ok')}
     catch(e){item.status='error';setQS(item.id,'error');log(`✗ 压缩失败`,'err');continue}
 
-    // STEP 3: Upload
     const cosPath=selectedFolder+Date.now()+'_'+item.title.replace(/[^a-zA-Z0-9\u4e00-\u9fff_-]/g,'')+'.jpg';
     setQS(item.id,'uploading');log(`上传: → ${cosPath}`,'info');
     try{
       await new Promise((res,rej)=>{COS_CLIENT.putObject({Bucket:CONFIG.admin.cos_bucket,Region:CONFIG.admin.cos_region,Key:cosPath,Body:blob},(e,d)=>e?rej(e):res(d))});
       item.status='done';setQS(item.id,'done');log('✓ 上传成功','ok');
-
-      // STEP 4: Build entry with EXIF (already read locally, no extra COS request)
-      let dateVal=item.date;
-      if(!dateVal&&exif&&exif.datetime){const ym=exifDateToYM(exif.datetime);if(ym)dateVal=ym}
-      const entry={file:'/'+cosPath,title:item.title,category:item.category,location:item.location,date:dateVal||item.date,
-        tags:item.tags?item.tags.split(/[,，]/).map(t=>t.trim()).filter(Boolean):[],notes:item.notes||'',
-        exif:exif||false};
+      let dateVal=item.date;if(!dateVal&&exif&&exif.datetime){const ym=exifDateToYM(exif.datetime);if(ym)dateVal=ym}
+      const entry={file:'/'+cosPath,title:item.title,location:item.location,date:dateVal||item.date,tags:item.tags?item.tags.split(/[,，]/).map(t=>t.trim()).filter(Boolean):[],notes:item.notes||'',exif:exif||false};
       if(item.wide)entry.wide=true;if(item.tall)entry.tall=true;
       successEntries.push(entry);
     }catch(e){item.status='error';setQS(item.id,'error');log(`✗ 上传失败: ${e.message}`,'err')}
     renderQueue();
   }
-
   successEntries.forEach(e=>DATA.photos.unshift(e));
 
+  // Push data.json
   if(successEntries.length>0||DATA._dirty){
     log('更新 data.json ...','info');
-    const apiUrl=`https://api.github.com/repos/${CONFIG.admin.github_repo}/contents/data.json`;
-    try{
-      const res=await fetch(apiUrl,{headers:{Authorization:`token ${ghToken}`}});const gd=await res.json();
-      const putRes=await fetch(apiUrl,{method:'PUT',headers:{Authorization:`token ${ghToken}`,'Content-Type':'application/json'},
-        body:JSON.stringify({message:`[Admin] update (${new Date().toLocaleString('zh-CN')})`,content:u2b(JSON.stringify({photos:DATA.photos},null,2)),sha:gd.sha})});
-      if(putRes.ok){log('🎉 发布成功！','ok');DATA._dirty=false;queue=queue.filter(q=>q.status!=='done');renderQueue();document.getElementById('editCount').textContent=`(${DATA.photos.length})`}
-      else throw new Error(await putRes.text());
-    }catch(e){log('GitHub 失败: '+e.message,'err');successEntries.forEach(()=>DATA.photos.shift())}
-  }else if(!pending.length&&!DATA._dirty){log('没有待处理的内容','info')}
+    try{await pushFile('data.json',JSON.stringify({photos:DATA.photos},null,2),`[Admin] data update`);log('🎉 data.json 已发布','ok');DATA._dirty=false;queue=queue.filter(q=>q.status!=='done');renderQueue();document.getElementById('editCount').textContent=`(${DATA.photos.length})`}
+    catch(e){log('✗ '+e.message,'err');successEntries.forEach(()=>DATA.photos.shift())}
+  }
+
+  // Push config.json if dirty
+  if(configDirty){
+    log('更新 config.json ...','info');
+    try{await pushFile('config.json',JSON.stringify(CONFIG,null,2),`[Admin] config update`);log('🎉 config.json 已发布','ok');configDirty=false}
+    catch(e){log('✗ '+e.message,'err')}
+  }
+
+  if(!pending.length&&!successEntries.length&&!DATA._dirty&&!configDirty)log('没有待处理的内容','info');
   btn.disabled=false;btn.textContent='发布到网站';
 }
 
-/* ═══ LOG (two separate logs) ═══ */
+async function pushFile(path,content,msg){
+  const ghToken=localStorage.getItem('zx_gh_token');
+  const apiUrl=`https://api.github.com/repos/${CONFIG.admin.github_repo}/contents/${path}`;
+  const res=await fetch(apiUrl,{headers:{Authorization:`token ${ghToken}`}});
+  if(!res.ok)throw new Error(`读取 ${path} 失败`);
+  const gd=await res.json();
+  const putRes=await fetch(apiUrl,{method:'PUT',headers:{Authorization:`token ${ghToken}`,'Content-Type':'application/json'},body:JSON.stringify({message:msg,content:u2b(content),sha:gd.sha})});
+  if(!putRes.ok)throw new Error(`推送 ${path} 失败`);
+}
+
+/* ═══ LOG ═══ */
 function log(msg,type='info'){const el=document.getElementById('log');el.innerHTML+=`<div class="${type}">${msg}</div>`;el.scrollTop=el.scrollHeight}
 function editLog(msg,type='info'){const el=document.getElementById('editLog');el.innerHTML+=`<div class="${type}">${msg}</div>`;el.scrollTop=el.scrollHeight}
+function settingsLog(msg,type='info'){const el=document.getElementById('settingsLog');el.innerHTML+=`<div class="${type}">${msg}</div>`;el.scrollTop=el.scrollHeight}
 </script>
 </body>
 </html>
