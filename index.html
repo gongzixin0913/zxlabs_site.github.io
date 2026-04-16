@@ -135,9 +135,17 @@ footer{text-align:center;padding:2rem;font-size:.72rem;color:var(--text-muted);l
   </div>
 </nav>
 <section class="hero"><div class="hero-bg"></div><div class="hero-content"><div class="hero-eyebrow" id="heroEyebrow"></div><h1 class="hero-title" id="heroTitle"></h1><p class="hero-sub" id="heroSub"></p><div class="hero-arrow"><span></span></div></div></section>
-<section id="gallery"><div class="section-label reveal">Portfolio</div><h2 class="section-title reveal">作品集</h2><p class="section-desc reveal">这些年走过的路、看过的光，都在这里。</p><div class="cat-tabs reveal" id="catTabs"></div><div class="tag-pills reveal" id="tagPills"></div><div class="gallery-count reveal" id="galleryCount"></div><div class="gallery-grid" id="galleryGrid"></div></section>
+<section id="gallery"><div class="section-label reveal">Portfolio</div><h2 class="section-title reveal">作品集</h2><p class="section-desc reveal">这些年走过的路、看过的光，都在这里。</p>
+<div class="cat-tabs reveal" id="catTabs"></div>
+<div class="tag-pills reveal" id="tagPills"></div>
+<div style="display:flex;gap:.8rem;flex-wrap:wrap;align-items:center;margin-bottom:1rem" class="reveal">
+  <div class="tag-pills" id="locPills" style="margin-bottom:0"></div>
+  <select id="sortOrder" onchange="applyFilter()" style="padding:.3rem .8rem;font-size:.78rem;background:var(--bg-card);border:1px solid var(--border);color:var(--text-muted);border-radius:2rem;cursor:pointer"><option value="newest">最新优先</option><option value="oldest">最早优先</option></select>
+</div>
+<div class="gallery-count reveal" id="galleryCount"></div>
+<div class="gallery-grid" id="galleryGrid"></div></section>
 <section id="about"><div class="about-wrap"><div class="about-portrait reveal" id="aboutPortrait"></div><div class="about-text reveal" id="aboutText"></div></div></section>
-<section id="contact" class="contact-section"><div class="section-label reveal">Contact</div><h2 class="section-title reveal">合作 & 联系</h2><p class="section-desc reveal" style="margin:.6rem auto 0">约拍、授权、合作、肖像维权，欢迎联系</p><div class="contact-links reveal" id="contactLinks"></div></section>
+<section id="contact" class="contact-section"><div class="section-label reveal">Contact</div><h2 class="section-title reveal">合作 & 联系</h2><p class="section-desc reveal" style="margin:.6rem auto 0">约拍、授权、合作，欢迎联系</p><div class="contact-links reveal" id="contactLinks"></div></section>
 <footer id="footer"></footer>
 <button class="back-top" id="backTop" onclick="window.scrollTo({top:0})">↑</button>
 
@@ -161,9 +169,8 @@ footer{text-align:center;padding:2rem;font-size:.72rem;color:var(--text-muted);l
 </div>
 
 <script>
-let CONFIG=null,DATA=null,currentFilter='全部',currentTagFilter='',currentLightboxIndex=-1,filteredPhotos=[];
+let CONFIG=null,DATA=null,currentFilter='全部',currentTagFilter='',currentLocFilter='',currentLightboxIndex=-1,filteredPhotos=[];
 
-/* Disable right-click on images globally */
 document.addEventListener('contextmenu',e=>{if(e.target.tagName==='IMG')e.preventDefault()});
 
 (async function(){
@@ -173,31 +180,44 @@ document.addEventListener('contextmenu',e=>{if(e.target.tagName==='IMG')e.preven
   document.getElementById('loading-screen').classList.add('hidden');
 })();
 
-/* Watermark URL builder */
+/* Derive category from file path: /photo/风光/xxx.jpg → 风光 */
+function getCategory(p){
+  const parts=p.file.replace(/^\//,'').split('/');
+  return parts.length>=2?parts[parts.length-2]:'未分类';
+}
+
+/* Watermark */
 function wmParam(){
-  const w=CONFIG.watermark; if(!w||!w.text)return '';
+  const w=CONFIG.watermark;if(!w||!w.text)return '';
   const t=btoa(unescape(encodeURIComponent(w.text)));
   return `/watermark/2/text/${t}/fontsize/${w.fontsize||16}/fill/I2ZmZmZmZmY=/dissolve/${w.opacity||35}/gravity/${w.position||'southeast'}/dx/15/dy/15`;
 }
-
 function getUrl(file,size,addWatermark){
-  const base=CONFIG.cos_base+file;
-  let params='';
+  const base=CONFIG.cos_base+file;let params='';
   if(size)params+=`?imageMogr2/thumbnail/${size}x/quality/85`;
   if(addWatermark){params+=(params?'|':'?')+wmParam().substring(1)}
   return base+params;
 }
 
 function render(){
-  const{site,about,contact,categories}=CONFIG;
+  const{site,about,contact}=CONFIG;
   document.title=site.logo.replace(' · ','-')+' Photography';
   document.getElementById('navLogo').innerHTML=site.logo.replace('·','<span>·</span>');
   document.getElementById('heroEyebrow').textContent=site.eyebrow;
   document.getElementById('heroTitle').innerHTML=site.title;
   document.getElementById('heroSub').textContent=site.subtitle;
+
+  // Categories from folder names in data
+  const cats=new Set();DATA.photos.forEach(p=>cats.add(getCategory(p)));
   const tabs=document.getElementById('catTabs');tabs.innerHTML='';
-  ['全部',...categories].forEach(cat=>{const b=document.createElement('button');b.className='cat-tab'+(cat==='全部'?' active':'');b.textContent=cat;b.onclick=()=>{currentTagFilter='';filterCat(cat,b);renderTags()};tabs.appendChild(b)});
-  renderTags();renderGallery(DATA.photos);
+  ['全部',...[...cats].sort()].forEach(cat=>{
+    const b=document.createElement('button');b.className='cat-tab'+(cat==='全部'?' active':'');b.textContent=cat;
+    b.onclick=()=>{currentTagFilter='';currentLocFilter='';filterCat(cat,b);renderTags();renderLocs()};
+    tabs.appendChild(b);
+  });
+
+  renderTags();renderLocs();applyFilter();
+
   document.getElementById('aboutPortrait').innerHTML=about.avatar?`<img src="${about.avatar}" alt="${about.name}" loading="lazy">`:`<div class="placeholder-avatar">📷</div>`;
   document.getElementById('aboutText').innerHTML=`<div class="section-label">About</div><h2>你好，我是${about.name}</h2>${about.bio.map(p=>`<p>${p}</p>`).join('')}<div class="about-stats">${about.stats.map(s=>`<div class="about-stat"><strong>${s.value}</strong><span>${s.label}</span></div>`).join('')}</div>`;
   const ce=document.getElementById('contactLinks');ce.innerHTML='';
@@ -206,11 +226,30 @@ function render(){
   document.getElementById('crText').textContent=CONFIG.copyright?.notice||'版权所有，请联系作者获取原图。';
 }
 
+function getFilteredBase(){
+  return currentFilter==='全部'?DATA.photos:DATA.photos.filter(p=>getCategory(p)===currentFilter);
+}
+
 function renderTags(){
-  const photos=currentFilter==='全部'?DATA.photos:DATA.photos.filter(p=>p.category===currentFilter);
+  const photos=getFilteredBase();
   const tags=new Set();photos.forEach(p=>(p.tags||[]).forEach(t=>tags.add(t)));
   const el=document.getElementById('tagPills');el.innerHTML='';
-  tags.forEach(tag=>{const b=document.createElement('button');b.className='tag-pill'+(tag===currentTagFilter?' active':'');b.textContent='#'+tag;b.onclick=()=>{currentTagFilter=currentTagFilter===tag?'':tag;renderTags();applyFilter()};el.appendChild(b)});
+  [...tags].sort().forEach(tag=>{
+    const b=document.createElement('button');b.className='tag-pill'+(tag===currentTagFilter?' active':'');b.textContent='#'+tag;
+    b.onclick=()=>{currentTagFilter=currentTagFilter===tag?'':tag;renderTags();applyFilter()};
+    el.appendChild(b);
+  });
+}
+
+function renderLocs(){
+  const photos=getFilteredBase();
+  const locs=new Set();photos.forEach(p=>{if(p.location)locs.add(p.location)});
+  const el=document.getElementById('locPills');el.innerHTML='';
+  [...locs].sort().forEach(loc=>{
+    const b=document.createElement('button');b.className='tag-pill'+(loc===currentLocFilter?' active':'');b.textContent='📍'+loc;
+    b.onclick=()=>{currentLocFilter=currentLocFilter===loc?'':loc;renderLocs();applyFilter()};
+    el.appendChild(b);
+  });
 }
 
 function renderGallery(photos){
@@ -232,7 +271,20 @@ function renderGallery(photos){
 }
 
 function filterCat(cat,btn){currentFilter=cat;document.querySelectorAll('.cat-tab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');applyFilter()}
-function applyFilter(){let p=currentFilter==='全部'?DATA.photos:DATA.photos.filter(x=>x.category===currentFilter);if(currentTagFilter)p=p.filter(x=>(x.tags||[]).includes(currentTagFilter));document.querySelectorAll('.gallery-item').forEach(e=>e.classList.add('hiding'));setTimeout(()=>renderGallery(p),300)}
+
+function applyFilter(){
+  let p=getFilteredBase();
+  if(currentTagFilter)p=p.filter(x=>(x.tags||[]).includes(currentTagFilter));
+  if(currentLocFilter)p=p.filter(x=>x.location===currentLocFilter);
+  // Sort by date
+  const order=document.getElementById('sortOrder').value;
+  p=[...p].sort((a,b)=>{
+    const da=a.date||'',db=b.date||'';
+    return order==='newest'?db.localeCompare(da):da.localeCompare(db);
+  });
+  document.querySelectorAll('.gallery-item').forEach(e=>e.classList.add('hiding'));
+  setTimeout(()=>renderGallery(p),300);
+}
 
 function openLB(i){
   currentLightboxIndex=i;const p=filteredPhotos[i];
@@ -241,7 +293,7 @@ function openLB(i){
   img.src=getUrl(p.file,1600,true);
   img.onload=()=>{img.classList.add('loaded');ld.style.display='none'};
   document.getElementById('lightboxTitle').textContent=p.title;
-  document.getElementById('lightboxMeta').textContent=`${p.location} · ${p.date} · ${p.category}`;
+  document.getElementById('lightboxMeta').textContent=`${p.location} · ${p.date} · ${getCategory(p)}`;
   document.getElementById('lightboxTags').innerHTML=(p.tags||[]).map(t=>`<span>${t}</span>`).join('');
   const n=document.getElementById('lightboxNotes');n.textContent=p.notes||'';n.style.display=p.notes?'':'none';
   document.getElementById('lightbox').classList.add('open');document.body.style.overflow='hidden';
