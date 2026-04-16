@@ -1,3 +1,24 @@
 {
-  "photos": []
+  "photos": [
+    {
+      "file": "/photo/人像/1776324733152__DSF9982.JPG",
+      "title": "_DSF9982",
+      "location": "乌镇",
+      "date": "2023-08",
+      "tags": [
+        "古装"
+      ],
+      "notes": "",
+      "exif": {
+        "make": "FUJIFILM",
+        "model": "X-T30 II",
+        "aperture": "",
+        "shutter": "1/250s",
+        "iso": "100",
+        "focal": "50mm",
+        "datetime": "2023:08:27 16:39:06"
+      },
+      "wide": true
+    }
+  ]
 }
