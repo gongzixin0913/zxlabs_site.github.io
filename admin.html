@@ -247,12 +247,7 @@
         <div class="mgr-toolbar">
           <label class="check"><input type="checkbox" id="editSelectAll" onchange="toggleSelectAll(this.checked)"> 全选</label>
           <span class="sel-count" id="selCount">已选 0 张</span>
-          <button class="btn btn-sm" onclick="batchAddTags()">批量加标签</button>
-          <button class="btn btn-sm" onclick="batchRemoveTags()">批量删标签</button>
-          <button class="btn btn-sm" onclick="batchSetLoc()">批量改地点</button>
-          <button class="btn btn-sm" onclick="batchSetDate()">批量改时间</button>
-          <button class="btn btn-sm" onclick="batchMove()">批量移动</button>
-          <button class="btn btn-sm btn-danger" onclick="batchDelete()">批量删除</button>
+          <button class="btn btn-sm" id="batchModeBtn" onclick="toggleBatchMode()">启用批量处理</button>
         </div>
 
         <div class="row" style="margin-bottom:.6rem">
@@ -571,11 +566,26 @@ function renderManageList(){
   }).join('');
 
   // Restore detail
-  if(currentDetailIndex>=0&&filteredIdx.includes(currentDetailIndex))renderDetail(currentDetailIndex);
+  if(batchMode)renderBatchDetail();
+  else if(currentDetailIndex>=0&&filteredIdx.includes(currentDetailIndex))renderDetail(currentDetailIndex);
   else showEmptyDetail();
 }
 
+let batchMode=false;
+let batchTags=new Set();  // tags user selected in batch panel
+let batchLoc='';          // location user selected in batch panel
+
+function toggleBatchMode(){
+  batchMode=!batchMode;
+  batchTags.clear();batchLoc='';
+  const btn=document.getElementById('batchModeBtn');
+  if(batchMode){btn.textContent='退出批量处理';btn.classList.add('btn-p');renderBatchDetail()}
+  else{btn.textContent='启用批量处理';btn.classList.remove('btn-p');
+    if(currentDetailIndex>=0)renderDetail(currentDetailIndex);else showEmptyDetail()}
+}
+
 function showEmptyDetail(){
+  if(batchMode){renderBatchDetail();return}
   currentDetailIndex=-1;
   const d=document.getElementById('mgrDetail');
   d.classList.add('empty');
@@ -583,10 +593,172 @@ function showEmptyDetail(){
 }
 
 function selectDetail(i,e){
+  if(batchMode)return; // in batch mode clicking a row does nothing special
   currentDetailIndex=i;
   document.querySelectorAll('.mgr-row').forEach(r=>r.classList.remove('active'));
   if(e&&e.currentTarget)e.currentTarget.classList.add('active');
   renderDetail(i);
+}
+
+function renderBatchDetail(){
+  refreshTagPools();
+  const d=document.getElementById('mgrDetail');
+  d.classList.remove('empty');
+  const allTags=getAllTags();
+  const allLocs=getAllLocs();
+
+  const tagChips=allTags.map(t=>`<span class="chip${batchTags.has(t)?' active':''}" onclick="toggleBatchTag('${esc(t)}')">${t}</span>`).join('');
+  const uniqueBatchTags=[...batchTags].filter(t=>!allTags.includes(t));
+  const uniqueTagChips=uniqueBatchTags.map(t=>`<span class="chip active" onclick="toggleBatchTag('${esc(t)}')">${t}</span>`).join('');
+
+  const locChips=allLocs.map(l=>`<span class="chip${l===batchLoc?' single-active':''}" onclick="toggleBatchLoc('${esc(l)}')">${l}</span>`).join('');
+  const uniqueLocChip=batchLoc&&!allLocs.includes(batchLoc)?`<span class="chip single-active" onclick="toggleBatchLoc('${esc(batchLoc)}')">${batchLoc}</span>`:'';
+
+  d.innerHTML=`
+    <div style="background:var(--accent-s);border:1px solid var(--accent-d);padding:.8rem 1rem;border-radius:var(--r);margin-bottom:1rem">
+      <div style="font-weight:500;color:var(--accent);margin-bottom:.2rem">🎯 批量处理模式</div>
+      <div style="font-size:.78rem;color:var(--dim)">左侧勾选照片（<strong id="batchSelCountInline" style="color:var(--accent)">${selectedIndices.size}</strong> 张已选），在此配置后点击下方各操作按钮。</div>
+    </div>
+
+    <h3 style="margin-top:0">① 批量添加标签</h3>
+    <p class="hint">选中下方标签（可多选），然后点"应用"。已有此标签的照片跳过。</p>
+    <div class="chip-picker">${tagChips}${uniqueTagChips}<span class="chip chip-add" onclick="addBatchTag()">+ 新建</span></div>
+    <div style="margin-top:.5rem"><button class="btn btn-sm btn-p" onclick="applyBatchAddTags()">应用（添加这些标签到选中照片）</button></div>
+
+    <h3>② 批量移除标签</h3>
+    <p class="hint">从选中照片中移除指定的标签，未勾选的照片不受影响。</p>
+    <div id="batchRemoveTagChips"></div>
+    <div style="margin-top:.5rem"><button class="btn btn-sm" onclick="applyBatchRemoveTags()">应用（从选中照片移除勾选的标签）</button></div>
+
+    <h3>③ 批量修改地点</h3>
+    <p class="hint">选一个地点（再次点击同地点取消选择），然后点"修改地点"。</p>
+    <div class="chip-picker">${locChips}${uniqueLocChip}<span class="chip chip-add" onclick="addBatchLoc()">+ 新建</span></div>
+    <div style="margin-top:.5rem"><button class="btn btn-sm btn-p" onclick="applyBatchSetLoc()">修改地点</button> <button class="btn btn-sm btn-danger" onclick="applyBatchClearLoc()">清除地点</button></div>
+
+    <h3>④ 批量修改时间</h3>
+    <p class="hint">格式：2024 或 2024-06，留空则清除。</p>
+    <div class="row"><div class="field"><input type="text" id="batchDateInput" placeholder="如：2024-06"></div>
+    <div style="align-self:flex-end;display:flex;gap:.3rem"><button class="btn btn-sm btn-p" onclick="applyBatchSetDate()">修改时间</button></div></div>
+
+    <h3>⑤ 批量移动</h3>
+    <p class="hint">移动到其他 COS 文件夹（会在 COS 上实际搬移文件，验证后删除原文件）。</p>
+    <div class="row"><div class="field"><select id="batchMoveSel">${getFolderOptions()}</select></div>
+    <div style="align-self:flex-end"><button class="btn btn-sm btn-p" onclick="applyBatchMove()">移动到此文件夹</button></div></div>
+
+    <h3 style="color:var(--red)">⑥ 批量删除</h3>
+    <p class="hint">从网站移除并删除 COS 文件，不可恢复。</p>
+    <div><button class="btn btn-sm btn-danger" onclick="applyBatchDelete()">删除选中的 ${selectedIndices.size} 张</button></div>
+  `;
+
+  // Now render the remove-tag chips based on what's currently in selected photos
+  renderBatchRemoveTagChips();
+}
+
+function renderBatchRemoveTagChips(){
+  const el=document.getElementById('batchRemoveTagChips');
+  if(!el)return;
+  const tagCount=new Map();
+  selectedIndices.forEach(i=>{(DATA.photos[i].tags||[]).forEach(t=>tagCount.set(t,(tagCount.get(t)||0)+1))});
+  if(!tagCount.size){el.innerHTML='<div class="hint">选中的照片没有标签，或尚未勾选照片</div>';return}
+  const sorted=[...tagCount.entries()].sort((a,b)=>a[0].localeCompare(b[0]));
+  el.innerHTML='<div class="chip-picker">'+sorted.map(([t,c])=>`<span class="chip${batchRemoveTags.has(t)?' active':''}" onclick="toggleBatchRemoveTag('${esc(t)}')">${t} <small style="opacity:.5">(${c})</small></span>`).join('')+'</div>';
+}
+
+let batchRemoveTags=new Set();
+function toggleBatchRemoveTag(t){if(batchRemoveTags.has(t))batchRemoveTags.delete(t);else batchRemoveTags.add(t);renderBatchRemoveTagChips()}
+
+/* Batch detail interactions */
+function toggleBatchTag(t){if(batchTags.has(t))batchTags.delete(t);else batchTags.add(t);renderBatchDetail()}
+function toggleBatchLoc(l){batchLoc=batchLoc===l?'':l;renderBatchDetail()}
+function addBatchTag(){const v=prompt('输入新标签（可逗号分隔多个）：');if(!v)return;v.split(/[,，]/).map(x=>x.trim()).filter(Boolean).forEach(t=>batchTags.add(t));renderBatchDetail()}
+function addBatchLoc(){const v=prompt('输入新地点：');if(!v||!v.trim())return;batchLoc=v.trim();renderBatchDetail()}
+
+/* Batch apply operations */
+function applyBatchAddTags(){
+  if(!selectedIndices.size){editLog('请先勾选照片','err');return}
+  if(!batchTags.size){editLog('请先选择要添加的标签','err');return}
+  const list=[...batchTags];
+  selectedIndices.forEach(i=>{if(!DATA.photos[i].tags)DATA.photos[i].tags=[];DATA.photos[i].tags=[...new Set([...DATA.photos[i].tags,...list])]});
+  DATA._dirty=true;
+  editLog(`✓ 已为 ${selectedIndices.size} 张照片添加标签: ${list.join(', ')}`,'ok');
+  batchTags.clear();
+  renderManageList();renderBatchDetail();
+}
+function applyBatchRemoveTags(){
+  if(!selectedIndices.size){editLog('请先勾选照片','err');return}
+  if(!batchRemoveTags.size){editLog('请先选择要移除的标签','err');return}
+  const list=[...batchRemoveTags];
+  selectedIndices.forEach(i=>{if(DATA.photos[i].tags)DATA.photos[i].tags=DATA.photos[i].tags.filter(t=>!list.includes(t))});
+  DATA._dirty=true;
+  editLog(`✓ 已从 ${selectedIndices.size} 张照片移除: ${list.join(', ')}`,'ok');
+  batchRemoveTags.clear();
+  renderManageList();renderBatchDetail();
+}
+function applyBatchSetLoc(){
+  if(!selectedIndices.size){editLog('请先勾选照片','err');return}
+  if(!batchLoc){editLog('请先选择一个地点','err');return}
+  if(!confirm(`将 ${selectedIndices.size} 张照片的地点改为「${batchLoc}」？`))return;
+  selectedIndices.forEach(i=>{DATA.photos[i].location=batchLoc});
+  DATA._dirty=true;
+  editLog(`✓ ${selectedIndices.size} 张地点 → ${batchLoc}`,'ok');
+  batchLoc='';
+  renderManageList();renderBatchDetail();
+}
+function applyBatchClearLoc(){
+  if(!selectedIndices.size){editLog('请先勾选','err');return}
+  if(!confirm(`清除 ${selectedIndices.size} 张照片的地点？`))return;
+  selectedIndices.forEach(i=>{DATA.photos[i].location=''});
+  DATA._dirty=true;
+  editLog(`✓ 已清除 ${selectedIndices.size} 张地点`,'ok');
+  renderManageList();renderBatchDetail();
+}
+function applyBatchSetDate(){
+  if(!selectedIndices.size){editLog('请先勾选','err');return}
+  const v=document.getElementById('batchDateInput').value.trim();
+  if(!confirm(`将 ${selectedIndices.size} 张照片的时间改为「${v||'(清空)'}」？`))return;
+  selectedIndices.forEach(i=>{DATA.photos[i].date=v});
+  DATA._dirty=true;
+  editLog(`✓ ${selectedIndices.size} 张时间 → ${v||'(已清空)'}`,'ok');
+  renderManageList();renderBatchDetail();
+}
+async function applyBatchMove(){
+  if(!selectedIndices.size){editLog('请先勾选','err');return}
+  if(!COS_CLIENT){editLog('请先保存凭证','err');return}
+  const folder=document.getElementById('batchMoveSel').value;
+  if(!folder){editLog('请选择目标文件夹','err');return}
+  const names=[...selectedIndices].map(i=>DATA.photos[i].file.split('/').pop());
+  if(!confirm(`确认移动 ${names.length} 张到 ${folder}？\n\n${names.slice(0,8).join('\n')}${names.length>8?'\n...':''}`))return;
+  editLog(`批量移动 → ${folder}`,'info');let moved=0;
+  for(const i of selectedIndices){
+    const p=DATA.photos[i],oldKey=p.file.replace(/^\//,''),fileName=oldKey.split('/').pop(),newKey=folder+fileName;
+    try{
+      await new Promise((res,rej)=>{COS_CLIENT.putObjectCopy({Bucket:CONFIG.admin.cos_bucket,Region:CONFIG.admin.cos_region,Key:newKey,CopySource:`${CONFIG.admin.cos_bucket}.cos.${CONFIG.admin.cos_region}.myqcloud.com/${oldKey}`},(e,d)=>e?rej(e):res(d))});
+      await cosHeadObject(newKey);
+      await new Promise((res,rej)=>{COS_CLIENT.deleteObject({Bucket:CONFIG.admin.cos_bucket,Region:CONFIG.admin.cos_region,Key:oldKey},(e,d)=>e?rej(e):res(d))});
+      DATA.photos[i].file='/'+newKey;moved++;editLog(`✓ ${fileName}`,'ok');
+    }catch(e){editLog(`✗ ${fileName}: ${e.message}`,'err')}
+  }
+  if(moved>0)DATA._dirty=true;
+  editLog(`结果: ${moved}/${selectedIndices.size}`,'info');
+  renderManageList();renderBatchDetail();
+}
+async function applyBatchDelete(){
+  if(!selectedIndices.size){editLog('请先勾选','err');return}
+  if(!COS_CLIENT){editLog('请先保存凭证','err');return}
+  const items=[...selectedIndices].map(i=>({idx:i,title:DATA.photos[i].title,file:DATA.photos[i].file}));
+  if(!confirm(`⚠️ 确定删除 ${items.length} 张？\n\n同时删除 COS 文件，不可恢复！\n\n${items.slice(0,8).map(x=>x.title).join('\n')}`))return;
+  editLog(`批量删除 ${items.length} 张...`,'info');let deleted=0;
+  const sorted=items.sort((a,b)=>b.idx-a.idx);
+  for(const item of sorted){
+    const cosKey=item.file.replace(/^\//,'');
+    try{
+      await new Promise((res,rej)=>{COS_CLIENT.deleteObject({Bucket:CONFIG.admin.cos_bucket,Region:CONFIG.admin.cos_region,Key:cosKey},(e,d)=>e?rej(e):res(d))});
+      DATA.photos.splice(item.idx,1);deleted++;editLog(`✓ ${item.title}`,'ok');
+    }catch(e){editLog(`✗ COS 失败，仍移除: ${item.title}`,'err');DATA.photos.splice(item.idx,1)}
+  }
+  DATA._dirty=true;currentDetailIndex=-1;
+  editLog(`完成: ${deleted}/${items.length}`,'info');
+  renderManageList();renderBatchDetail();
 }
 
 function renderDetail(i){
@@ -713,69 +885,19 @@ function addNewLoc(i){
 /* Selection */
 function toggleSelect(i,checked){if(checked)selectedIndices.add(i);else selectedIndices.delete(i);updateSelCount()}
 function toggleSelectAll(checked){document.querySelectorAll('.m-check input').forEach(b=>{b.checked=checked;const idx=parseInt(b.dataset.idx);if(checked)selectedIndices.add(idx);else selectedIndices.delete(idx)});updateSelCount()}
-function updateSelCount(){document.getElementById('selCount').textContent=`已选 ${selectedIndices.size} 张`}
-
-/* ═══ BATCH OPS ═══ */
-function batchAddTags(){
-  if(!selectedIndices.size){editLog('请先勾选','err');return}
-  const allTags=getAllTags();
-  const v=prompt(`批量加标签（逗号分隔，影响 ${selectedIndices.size} 张）：\n\n已有标签：${allTags.join(', ')||'(无)'}`);
-  if(!v)return;
-  const newTags=v.split(/[,，]/).map(t=>t.trim()).filter(Boolean);
-  selectedIndices.forEach(i=>{if(!DATA.photos[i].tags)DATA.photos[i].tags=[];DATA.photos[i].tags=[...new Set([...DATA.photos[i].tags,...newTags])]});
-  DATA._dirty=true;editLog(`✓ ${selectedIndices.size} 张添加标签: ${newTags.join(', ')}`,'ok');renderManageList();
-}
-function batchRemoveTags(){
-  if(!selectedIndices.size){editLog('请先勾选','err');return}
-  // Collect tags present in selected
-  const presentTags=new Set();
-  selectedIndices.forEach(i=>(DATA.photos[i].tags||[]).forEach(t=>presentTags.add(t)));
-  if(!presentTags.size){editLog('选中照片没有标签','info');return}
-  const list=[...presentTags].sort();
-  const v=prompt(`选中的照片共有以下标签，输入要删除的（逗号分隔）：\n\n${list.join(', ')}`);
-  if(!v)return;
-  const toRemove=v.split(/[,，]/).map(t=>t.trim()).filter(Boolean);
-  selectedIndices.forEach(i=>{if(DATA.photos[i].tags)DATA.photos[i].tags=DATA.photos[i].tags.filter(t=>!toRemove.includes(t))});
-  DATA._dirty=true;editLog(`✓ 已删除 ${toRemove.join(', ')}`,'ok');renderManageList();
-}
-function batchSetLoc(){
-  if(!selectedIndices.size){editLog('请先勾选','err');return}
-  const allLocs=getAllLocs();
-  const v=prompt(`批量改地点（影响 ${selectedIndices.size} 张）：\n\n已有地点：${allLocs.join(', ')||'(无)'}\n\n输入新地点（留空清除地点）：`);
-  if(v===null)return;
-  selectedIndices.forEach(i=>{DATA.photos[i].location=v.trim()});
-  DATA._dirty=true;editLog(`✓ ${selectedIndices.size} 张地点: ${v||'(已清空)'}`,'ok');renderManageList();
-}
-function batchSetDate(){
-  if(!selectedIndices.size){editLog('请先勾选','err');return}
-  const v=prompt(`批量改时间（影响 ${selectedIndices.size} 张）\n格式示例: 2024 或 2024-06`);
-  if(v===null)return;
-  selectedIndices.forEach(i=>{DATA.photos[i].date=v.trim()});
-  DATA._dirty=true;editLog(`✓ 时间: ${v}`,'ok');renderManageList();
+function updateSelCount(){
+  document.getElementById('selCount').textContent=`已选 ${selectedIndices.size} 张`;
+  // Update batch panel if visible
+  const inline=document.getElementById('batchSelCountInline');
+  if(inline)inline.textContent=selectedIndices.size;
+  renderBatchRemoveTagChips();
+  // Update the delete button count in batch panel
+  const delBtn=document.querySelector('#mgrDetail button.btn-danger');
+  if(delBtn&&batchMode&&delBtn.textContent.includes('删除选中'))delBtn.textContent=`删除选中的 ${selectedIndices.size} 张`;
 }
 
+/* ═══ SINGLE PHOTO OPS (COS helpers used by batch too) ═══ */
 function cosHeadObject(key){return new Promise((res,rej)=>{COS_CLIENT.headObject({Bucket:CONFIG.admin.cos_bucket,Region:CONFIG.admin.cos_region,Key:key},(err,data)=>err?rej(err):res(data))})}
-
-async function batchMove(){
-  if(!selectedIndices.size){editLog('请先勾选','err');return}
-  if(!COS_CLIENT){editLog('请先保存凭证','err');return}
-  const target=prompt('输入目标文件夹（如 photo/风光/）：');
-  if(!target)return;const folder=target.endsWith('/')?target:target+'/';
-  const names=[...selectedIndices].map(i=>DATA.photos[i].file.split('/').pop());
-  if(!confirm(`确认移动 ${names.length} 张到 ${folder}？\n\n${names.slice(0,8).join('\n')}${names.length>8?'\n...':''}`))return;
-  editLog(`批量移动 → ${folder}`,'info');let moved=0;
-  for(const i of selectedIndices){
-    const p=DATA.photos[i],oldKey=p.file.replace(/^\//,''),fileName=oldKey.split('/').pop(),newKey=folder+fileName;
-    try{
-      await new Promise((res,rej)=>{COS_CLIENT.putObjectCopy({Bucket:CONFIG.admin.cos_bucket,Region:CONFIG.admin.cos_region,Key:newKey,CopySource:`${CONFIG.admin.cos_bucket}.cos.${CONFIG.admin.cos_region}.myqcloud.com/${oldKey}`},(e,d)=>e?rej(e):res(d))});
-      await cosHeadObject(newKey);
-      await new Promise((res,rej)=>{COS_CLIENT.deleteObject({Bucket:CONFIG.admin.cos_bucket,Region:CONFIG.admin.cos_region,Key:oldKey},(e,d)=>e?rej(e):res(d))});
-      DATA.photos[i].file='/'+newKey;moved++;editLog(`✓ ${fileName}`,'ok');
-    }catch(e){editLog(`✗ ${fileName}: ${e.message}`,'err')}
-  }
-  if(moved>0)DATA._dirty=true;
-  editLog(`结果: ${moved}/${selectedIndices.size}`,'info');renderManageList();
-}
 
 async function movePhoto(i){
   if(!COS_CLIENT){editLog('请先保存凭证','err');return}
@@ -788,24 +910,6 @@ async function movePhoto(i){
     await new Promise((res,rej)=>{COS_CLIENT.deleteObject({Bucket:CONFIG.admin.cos_bucket,Region:CONFIG.admin.cos_region,Key:oldKey},(e,d)=>e?rej(e):res(d))});
     DATA.photos[i].file='/'+newKey;DATA._dirty=true;editLog('✓ 移动成功','ok');renderManageList();
   }catch(e){editLog(`✗ ${e.message}`,'err')}
-}
-
-async function batchDelete(){
-  if(!selectedIndices.size)return;
-  if(!COS_CLIENT){editLog('请先保存凭证','err');return}
-  const items=[...selectedIndices].map(i=>({idx:i,title:DATA.photos[i].title,file:DATA.photos[i].file}));
-  if(!confirm(`确定删除 ${items.length} 张？\n\n⚠️ 同时删除 COS 中的文件\n\n${items.slice(0,8).map(x=>x.title).join('\n')}`))return;
-  editLog(`批量删除 ${items.length} 张...`,'info');let deleted=0;
-  const sorted=items.sort((a,b)=>b.idx-a.idx);
-  for(const item of sorted){
-    const cosKey=item.file.replace(/^\//,'');
-    try{
-      await new Promise((res,rej)=>{COS_CLIENT.deleteObject({Bucket:CONFIG.admin.cos_bucket,Region:CONFIG.admin.cos_region,Key:cosKey},(e,d)=>e?rej(e):res(d))});
-      DATA.photos.splice(item.idx,1);deleted++;editLog(`✓ ${item.title}`,'ok');
-    }catch(e){editLog(`✗ COS 删除失败，仍移除: ${item.title}`,'err');DATA.photos.splice(item.idx,1)}
-  }
-  DATA._dirty=true;currentDetailIndex=-1;
-  editLog(`删除完成: ${deleted}/${items.length}`,'info');renderManageList();
 }
 
 async function delPhoto(i){
