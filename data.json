@@ -2884,7 +2884,9 @@
       "title": "DSCF2134",
       "location": "",
       "date": "2024-07",
-      "tags": [],
+      "tags": [
+        "路演舞蹈"
+      ],
       "notes": "",
       "exif": {
         "make": "FUJIFILM",
@@ -3089,7 +3091,9 @@
       "title": "寻",
       "location": "",
       "date": "2025-06",
-      "tags": [],
+      "tags": [
+        "旗袍"
+      ],
       "notes": "",
       "exif": {
         "make": "FUJIFILM",
@@ -3105,9 +3109,12 @@
     {
       "file": "/photo/人像/1776339591740_五指山下的猴王.JPG",
       "title": "五指山下的猴王",
-      "location": "",
+      "location": "张家界",
       "date": "2025-07",
-      "tags": [],
+      "tags": [
+        "旅拍",
+        "动物"
+      ],
       "notes": "",
       "exif": {
         "make": "FUJIFILM",
@@ -3253,7 +3260,7 @@
     {
       "file": "/photo/人像/1776339587493_你奈我何.JPG",
       "title": "你奈我何？",
-      "location": "",
+      "location": "岳阳",
       "date": "2025-07",
       "tags": [],
       "notes": "",
@@ -3270,7 +3277,7 @@
     {
       "file": "/photo/人像/1776339586664_教导.JPG",
       "title": "教导",
-      "location": "",
+      "location": "芷江",
       "date": "2025-07",
       "tags": [],
       "notes": "",
@@ -3289,7 +3296,9 @@
       "title": "瞅你咋滴",
       "location": "",
       "date": "2025-06",
-      "tags": [],
+      "tags": [
+        "动物"
+      ],
       "notes": "",
       "exif": {
         "make": "FUJIFILM",
@@ -3332,9 +3341,11 @@
     {
       "file": "/photo/人像/1776339584806_IMG_20240928_200320.jpg",
       "title": "IMG_20240928_200320",
-      "location": "",
+      "location": "上海",
       "date": "2024-09",
-      "tags": [],
+      "tags": [
+        "舞台"
+      ],
       "notes": "",
       "exif": {
         "make": "vivo",
@@ -3366,9 +3377,13 @@
     {
       "file": "/photo/人像/1776339583473_DSCF5465.JPG",
       "title": "DSCF5465",
-      "location": "",
+      "location": "日照",
       "date": "2025-07",
-      "tags": [],
+      "tags": [
+        "海滩",
+        "松弛",
+        "过曝"
+      ],
       "notes": "",
       "exif": {
         "make": "FUJIFILM",
@@ -3401,7 +3416,7 @@
     {
       "file": "/photo/人像/1776339582848_DSCF4886.JPG",
       "title": "DSCF4886",
-      "location": "",
+      "location": "宏村",
       "date": "2025-04",
       "tags": [],
       "notes": "",
@@ -3541,7 +3556,9 @@
       "title": "DSCF2398",
       "location": "",
       "date": "2025-07",
-      "tags": [],
+      "tags": [
+        "山"
+      ],
       "notes": "",
       "exif": {
         "make": "FUJIFILM",
@@ -3556,9 +3573,11 @@
     {
       "file": "/photo/人像/1776339576390_DSC_1200.JPG",
       "title": "DSC_1200",
-      "location": "",
+      "location": "章里古道",
       "date": "2026-04",
-      "tags": [],
+      "tags": [
+        "旅拍"
+      ],
       "notes": "",
       "exif": {
         "make": "NIKON",
@@ -3568,7 +3587,8 @@
         "iso": "2200",
         "focal": "82mm",
         "datetime": "2026:04:04 16:53:10"
-      }
+      },
+      "wide": true
     },
     {
       "file": "/photo/人像/1776339576094_DSC_1131.JPG",
@@ -3624,9 +3644,11 @@
     {
       "file": "/photo/人像/1776339574687__DSF6056.JPG",
       "title": "_DSF6056",
-      "location": "",
+      "location": "南京",
       "date": "2025-11",
-      "tags": [],
+      "tags": [
+        "阳光"
+      ],
       "notes": "",
       "exif": {
         "make": "FUJIFILM",
@@ -3680,7 +3702,10 @@
       "title": "_DSF5905",
       "location": "",
       "date": "2025-11",
-      "tags": [],
+      "tags": [
+        "情侣",
+        "多人"
+      ],
       "notes": "",
       "exif": {
         "make": "FUJIFILM",
@@ -3766,7 +3791,7 @@
     {
       "file": "/photo/人像/1776339570245__DSF5004.JPG",
       "title": "_DSF5004",
-      "location": "",
+      "location": "泉州",
       "date": "2025-07",
       "tags": [],
       "notes": "",
@@ -3800,7 +3825,7 @@
     {
       "file": "/photo/人像/1776339568993__DSF4471.JPG",
       "title": "_DSF4471",
-      "location": "",
+      "location": "黄山",
       "date": "2025-04",
       "tags": [],
       "notes": "",
@@ -3835,7 +3860,7 @@
     {
       "file": "/photo/人像/1776339567505__DSF3800.JPG",
       "title": "_DSF3800",
-      "location": "",
+      "location": "贵州",
       "date": "2025-07",
       "tags": [],
       "notes": "",
@@ -3854,7 +3879,9 @@
       "title": "_DSF3612",
       "location": "",
       "date": "2025-07",
-      "tags": [],
+      "tags": [
+        "光影"
+      ],
       "notes": "",
       "exif": {
         "make": "FUJIFILM",
@@ -3872,7 +3899,10 @@
       "title": "_DSF3528",
       "location": "",
       "date": "2025-07",
-      "tags": [],
+      "tags": [
+        "轨道",
+        "城市建筑"
+      ],
       "notes": "",
       "exif": {
         "make": "FUJIFILM",
@@ -3890,7 +3920,9 @@
       "title": "_DSF3434",
       "location": "",
       "date": "2025-07",
-      "tags": [],
+      "tags": [
+        "慢门"
+      ],
       "notes": "",
       "exif": {
         "make": "FUJIFILM",
@@ -4132,7 +4164,9 @@
       "title": "IMG_2765",
       "location": "",
       "date": "2024-05",
-      "tags": [],
+      "tags": [
+        "背影"
+      ],
       "notes": "",
       "exif": {
         "make": "Canon",
@@ -4167,7 +4201,9 @@
       "title": "IMG_2641",
       "location": "",
       "date": "2024-05",
-      "tags": [],
+      "tags": [
+        "花"
+      ],
       "notes": "",
       "exif": {
         "make": "Canon",
@@ -4199,9 +4235,11 @@
     {
       "file": "/photo/人像/1776339555822_IMG_2537.JPG",
       "title": "IMG_2537",
-      "location": "",
+      "location": "上海",
       "date": "2024-05",
-      "tags": [],
+      "tags": [
+        "花"
+      ],
       "notes": "",
       "exif": {
         "make": "Canon",
