@@ -480,10 +480,12 @@
     },
     {
       "file": "/photo/风光/1776339893699_IMG_20240713_055532.jpg",
-      "title": "IMG_20240713_055532",
+      "title": "树的翅膀",
       "location": "上海",
       "date": "2023-04",
-      "tags": [],
+      "tags": [
+        "光影"
+      ],
       "notes": "",
       "exif": false,
       "tall": true
@@ -628,7 +630,9 @@
       "title": "DSCF9445",
       "location": "上海",
       "date": "2023-07",
-      "tags": [],
+      "tags": [
+        "光影"
+      ],
       "notes": "",
       "exif": {
         "make": "FUJIFILM",
@@ -1309,7 +1313,11 @@
       "title": "DSCF0240",
       "location": "乌镇",
       "date": "2023-08",
-      "tags": [],
+      "tags": [
+        "旅拍",
+        "光影",
+        "船"
+      ],
       "notes": "",
       "exif": {
         "make": "FUJIFILM",
@@ -2587,7 +2595,10 @@
       "title": "小镇的雪",
       "location": "四川",
       "date": "2023-02",
-      "tags": [],
+      "tags": [
+        "多人",
+        "背影"
+      ],
       "notes": "",
       "exif": false,
       "tall": true
@@ -2651,7 +2662,10 @@
       "title": "DSCF9325",
       "location": "上海",
       "date": "2023-07",
-      "tags": [],
+      "tags": [
+        "背影",
+        "小孩"
+      ],
       "notes": "",
       "exif": {
         "make": "FUJIFILM",
@@ -2900,10 +2914,12 @@
     },
     {
       "file": "/photo/街拍/1776339662408__MG_3737.JPG",
-      "title": "_MG_3737",
+      "title": "军训晚会",
       "location": "上海",
       "date": "2023-07",
-      "tags": [],
+      "tags": [
+        "光影"
+      ],
       "notes": "",
       "exif": {
         "make": "Canon",
