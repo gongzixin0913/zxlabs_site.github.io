@@ -1273,9 +1273,12 @@
     {
       "file": "/photo/风光/1776339857786_DSC_1185.JPG",
       "title": "DSC_1185",
-      "location": "",
+      "location": "章里古道",
       "date": "2026-04",
-      "tags": [],
+      "tags": [
+        "山",
+        "瀑布"
+      ],
       "notes": "",
       "exif": {
         "make": "NIKON",
@@ -1291,9 +1294,11 @@
     {
       "file": "/photo/风光/1776339857117_DSC_1183.JPG",
       "title": "DSC_1183",
-      "location": "",
+      "location": "章里古道",
       "date": "2026-04",
-      "tags": [],
+      "tags": [
+        "山"
+      ],
       "notes": "",
       "exif": {
         "make": "NIKON",
